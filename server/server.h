@@ -1,10 +1,9 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include "../player.h"
 #include <unistd.h>
 #include <arpa/net.h>
 
-typedef struct {
-} Server;
-
+void run_server();
 #endif 
