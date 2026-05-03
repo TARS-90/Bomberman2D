@@ -1,6 +1,4 @@
 #include "../game.h"
-#include "../../enums.h"
-#include <stdlib.h>
 
 void* init_board() {
 	int *board = malloc((WIDTH * HEIGHT) * sizeof(int));
@@ -17,14 +15,13 @@ void* init_board() {
 	return board;
 }
 
-void* init_game() {
+void* init_game(Player **players) {
 	GameState *game = malloc(sizeof(GameState));
 	game->board = init_board();
-	game->player_count = 2;
+	game->players = players;
 	game->is_end = false;
 
 	return game;
 }
-
 
 

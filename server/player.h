@@ -1,14 +1,15 @@
-typedef enum {
-	RED,
-	GREEN,
-	BLUE,
-	YELLOW
-} Color;
+#ifndef PLAYER_H
+#define PLAYER_H
 
-struct Player {
+#include "../enums.h"
+
+typedef struct {
 	int x;
 	int y;
 	int health;
 	int bombs;
-	Color color;
-};
+	int radius;
+	PlayerColor color;
+} Player;
+
+#endif

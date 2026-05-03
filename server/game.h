@@ -1,17 +1,21 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "player.h"
+#include "../../enums.h"
+#include <stdbool.h>
+#include <stdlib.h>
+
 #define WIDTH 17
 #define HEIGHT 17
 
-#include <stdbool.h>
-
 typedef struct {
+	Player **players;
 	int *board;
-	int player_count;
 	bool is_end;
 } GameState;
 
-void* init_game();
+void* init_board();
+void* init_game(Player **players);
 
 #endif
