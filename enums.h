@@ -17,6 +17,7 @@ typedef enum {
 // on the game board
 typedef enum {
 	OBJECT_EMPTY,	
+	OBJECT_PLAYER,
 	OBJECT_WALL,
 	OBJECT_CHEST,
 	OBJECT_BOMB
@@ -33,7 +34,7 @@ typedef enum {
 	MSG_MOVE_DOWN,
 	MSG_MOVE_RIGHT,
 	MSG_MOVE_LEFT,
-	MSG_PUT_BOMB,
+	MSG_PLACE_BOMB,
 	MSG_STATE_UPDATE,
 	MSG_DISCONNECT
 } MessegeType;
