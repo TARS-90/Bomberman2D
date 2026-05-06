@@ -1,9 +1,10 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-struct Player;
+#include "player.h"
+#include "game.h"
 
-void **init_players(const int n);
-void *init_game(Player **players);
+Player **init_players(const int, const int);
+Game *init_game(Player**);
 void run_server();
 #endif 

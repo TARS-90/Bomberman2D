@@ -1,13 +1,12 @@
-#include "network.h"
-#include "player.h"
-#include "game.h"
+#include "server.h"
 #include <unistd.h>
-#include <arpa/net.h>
+#include <arpa/inet.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
-#define MAX_PLAYERS 4
-
-void **init_players(const int n, const int server_fd) {
-	Player *players[MAX_PLAYERS];
+Player **init_players(const int n, const int server_fd) {
+	Player **players = (Player**) malloc(sizeof(Player*) * n);
 
 	for (int i = 0; i < n; i++) {
 		int id = accept(server_fd, NULL, NULL);
@@ -20,7 +19,7 @@ void **init_players(const int n, const int server_fd) {
 	return players;
 }
 
-void* init_game(Player **players) {
+Game *init_game(Player **players) {
 	Game *game = malloc(sizeof(Game));
 	game->board = create_board();
 	game->players = players;
@@ -40,11 +39,12 @@ void run_server(const int players_count) {
 	addr.sin_port = htons(12345);
 	addr.sin_addr.s_addr = INADDR_ANY;
 
-	bind(server_fd (struct sockaddr*)&addr, sizeof(addr));
+	bind(server_fd, (struct sockaddr*)&addr, sizeof(addr));
 	listen(server_fd, players_count);
 	printf("Waiting for the players...");
 
 	Player **players = init_players(players_count, server_fd);
 	Game *game = init_game(players);
 
+	close(server_fd);
 }

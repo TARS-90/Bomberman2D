@@ -1,16 +1,17 @@
 #ifndef GAME_H
 #define GAME_H
 
-#define MAX_PLAYERS 4
+#include <stdbool.h>
+#include "player.h"
 
 typedef struct {
-	Player *players[MAX_PLAYERS];
+	Player **players;
 	int *board;
 	bool is_end;
 } Game;
 
-void* create_board();
+int *create_board();
 void run_game();
-void delete_game(Game *g);
+void delete_game(Game*);
 
 #endif

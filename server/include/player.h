@@ -1,9 +1,9 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-struct PlayerColor;
+#include "enums.h"
 
-struct Player {
+typedef struct {
 	int id;		// it contains sockfd
 	int x;
 	int y;
@@ -11,10 +11,10 @@ struct Player {
 	int bombs;
 	int radius;
 	PlayerColor color;
-};
+} Player;
 
-int set_x(int player_number);
-int set_y(int player_number);
-void* create_player(int id);
+int set_x(int);
+int set_y(int);
+void *create_player(int, int);
 
 #endif
