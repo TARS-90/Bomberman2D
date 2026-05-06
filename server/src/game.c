@@ -1,14 +1,5 @@
-#include "../game.h"
+#include "game.h"
 
-struct Player {
-	int id;
-	int x;
-	int y;
-	int health;
-	int bombs;
-	int radius;
-	PlayerColor color;
-};
 
 struct Bomb {
 	int x;
@@ -32,12 +23,12 @@ void* create_board() {
 	return board;
 }
 
-void* init_game() {
-	Game *game = malloc(sizeof(GameState));
-	game->board = create_board();
-	game->is_end = false;
 
-	return game;
+
+void run_game(Game* game) {
+	while (!game->is_end) {
+		
+	}
 }
 
 void delete_game(Game *g) {
