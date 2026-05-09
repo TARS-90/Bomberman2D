@@ -15,6 +15,7 @@ struct List {
 List *createList();
 void deleteList(List *l);
 void insert(List*, void*);
-void *get(List*, int);
+void *getAt(List*, int);
+void removeAt(List*, int);
 
 #endif 

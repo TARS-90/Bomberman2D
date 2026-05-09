@@ -50,7 +50,7 @@ void insert(List *l, void *value) {
 	l->size++;
 }
 
-void *get(List *l, int index) {
+void *getAt(List *l, int index) {
 	if (l == NULL || index < 0 || (size_t)index >= l->size) return NULL;
 
 	Node *tmp = l->head;
@@ -59,5 +59,31 @@ void *get(List *l, int index) {
 	}
 
 	return tmp->value;
+}
+
+void removeAt(List *l, int index) {
+	if (l == NULL || index < 0 || (size_t)index >= l->size) return;
+	
+	Node *tmp = l->head;
+	for (int i = 0; i < index; i++) {
+		tmp = tmp->next;
+	}
+
+	if (tmp->prev != NULL) {
+		tmp->prev->next = tmp->next;
+	}
+	else {
+		l->head = tmp->next;
+	}
+
+	if (tmp->next != NULL) {
+		tmp->next->prev = tmp->prev;
+	}
+	else {
+		l->tail = tmp->prev;
+	}
+
+	free(tmp);
+	l->size--;
 }
 
