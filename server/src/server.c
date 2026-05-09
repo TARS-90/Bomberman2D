@@ -6,7 +6,7 @@
 #include <string.h>
 
 Player **init_players(const int n, const int server_fd) {
-	Player **players = (Player**) malloc(sizeof(Player*) * n);
+	Player **players = malloc(sizeof(Player*) * n);
 
 	for (int i = 0; i < n; i++) {
 		int id = accept(server_fd, NULL, NULL);
