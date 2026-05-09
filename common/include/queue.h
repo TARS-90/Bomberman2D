@@ -13,7 +13,8 @@ struct Queue {
 };
 
 Queue *createQueue();
-void deleteQueue(Queue*);
+void deleteQueueDeep(Queue*);
+void deleteQueueShallow(Queue*);
 void enqueue(Queue*, void*);
 void *dequeue(Queue*);
 

@@ -16,8 +16,22 @@ void *createList() {
 	return l;
 }
 
+// deep deleting 
+void deleteListDeep(List *l) {
+	if (l == NULL) return;
+
+	while (l->head != NULL) {
+		Node *tmp = l->head;
+		l->head = tmp->next;
+		free(tmp->value);
+		free(tmp);
+	}
+
+	free(l);
+}
+
 // shallow deleting (values in Nodes are NOT! deleted)
-void deleteList(List *l) {
+void deleteListShallow(List *l) {
 	if (l == NULL) return;
 
 	while (l->head != NULL) {

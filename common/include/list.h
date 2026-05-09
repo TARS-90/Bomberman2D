@@ -13,7 +13,8 @@ struct List {
 };
 
 List *createList();
-void deleteList(List *l);
+void deleteListDeep(List *l);
+void deleteListShallow(List *l);
 void insert(List*, void*);
 void *getAt(List*, int);
 void removeAt(List*, int);

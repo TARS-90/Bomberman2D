@@ -16,8 +16,22 @@ Queue *createQueue() {
 	return q;
 }
 
+// deep deleting
+void deleteQueueDeep(Queue *q) {
+	if (q == NULL) return;
+
+	while (q->front != NULL) {
+		Node *tmp = q->front;
+		q->front = tmp->prev;
+		free(tmp->value);
+		free(tmp);
+	}
+
+	free(q);
+}
+
 // shallow deleting (values in Nodes are NOT! deleted)
-void deleteQueue(Queue *q) {
+void deleteQueueShallow(Queue *q) {
 	if (q == NULL) return;
 
 	while (q->front != NULL) {
