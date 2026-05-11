@@ -6,5 +6,6 @@
 
 Player **init_players(const int, const int);
 Game *init_game(Player**);
-void run_server();
+void run_server(const int);
+
 #endif 
