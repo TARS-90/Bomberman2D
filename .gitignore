@@ -1,1 +1,17 @@
+# CMake general
 /build/
+/out/
+/bin/
+
+# Temporary files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
+# other
+.vs/
+*.sln
+*.vcxproj
+*.user
+*.suo
+*.db
