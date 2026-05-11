@@ -1,3 +1,7 @@
+#include "client.h"
+#include <unistd.h>
+#include <arpa/inet.h>
+
 void run_client() {
 	int sock_fd = socket(AF_NET, SOCK_STREAM, 0);
 	struct sockaddr_in server_addr;

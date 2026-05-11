@@ -1,7 +1,6 @@
-#include "server.h"
+#include "client.h"
 
 int main(int argc, char **argv) {
-	run_server(1);
-
+	run_client();
 	return 0;
 }

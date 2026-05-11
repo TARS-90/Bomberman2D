@@ -1,0 +1,8 @@
+/home/tars/Pulpit/rozprochy/Bomberman/build/CMakeFiles/edit_cache.dir
+/home/tars/Pulpit/rozprochy/Bomberman/build/CMakeFiles/rebuild_cache.dir
+/home/tars/Pulpit/rozprochy/Bomberman/build/server/CMakeFiles/server.dir
+/home/tars/Pulpit/rozprochy/Bomberman/build/server/CMakeFiles/edit_cache.dir
+/home/tars/Pulpit/rozprochy/Bomberman/build/server/CMakeFiles/rebuild_cache.dir
+/home/tars/Pulpit/rozprochy/Bomberman/build/client/CMakeFiles/client.dir
+/home/tars/Pulpit/rozprochy/Bomberman/build/client/CMakeFiles/edit_cache.dir
+/home/tars/Pulpit/rozprochy/Bomberman/build/client/CMakeFiles/rebuild_cache.dir
