@@ -1,4 +1,6 @@
 #include "server.h"
+#include "player.h"
+#include "game.h"
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <stdlib.h>

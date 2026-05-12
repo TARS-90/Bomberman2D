@@ -1,8 +1,8 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "player.h"
-#include "game.h"
+typedef struct Player Player;
+typedef struct Game Game;
 
 Player **init_players(const int, const int);
 Game *init_game(Player**);

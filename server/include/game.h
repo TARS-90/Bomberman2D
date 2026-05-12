@@ -2,9 +2,9 @@
 #define GAME_H
 
 #include <stdbool.h>
-#include "player.h"
 
-typedef struct {
+typedef struct Player Player;
+typedef struct Game {
 	Player **players;
 	int *board;
 	bool is_end;

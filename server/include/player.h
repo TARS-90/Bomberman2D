@@ -3,7 +3,7 @@
 
 #include "enums.h"
 
-typedef struct {
+typedef struct Player {
 	int id;		// it contains sockfd
 	int x;
 	int y;
