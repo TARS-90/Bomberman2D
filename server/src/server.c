@@ -5,7 +5,6 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 
 Player **init_players(const int n, const int server_sock_fd) {
 	Player **players = malloc(sizeof(Player*) * n);
@@ -31,21 +30,32 @@ Game *init_game(Player **players) {
 
 void run_server(const int players_count) {
 	int sock_fd;
-	struct sockaddr_in sock_addr;
+	struct sockaddr_in sock_addr = {
+		.sin_family = AF_INET,
+		.sin_port = htons(12345),
+		.sin_addr.s_addr = INADDR_ANY
+	};
 
-	if (sock_fd = socket(AF_INET, SOCK_STREAM, 0) < 0) {
-		printf("Error: Could not create a server socket\n");
+	if ((sock_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+		perror("Server socket creation failed!");
 		return;
 	}
 
-	memset(&sock_addr, 0, sizeof(sock_addr));
-	sock_addr.sin_family = AF_INET;
-	sock_addr.sin_port = htons(12345);
-	sock_addr.sin_addr.s_addr = INADDR_ANY;
-	bind(sock_fd, (struct sockaddr*)&sock_addr, sizeof(sock_addr));
+	int opt = 1;
+	setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
-	listen(sock_fd, players_count);
+	if (bind(sock_fd, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) < 0) {
+		perror("Server socket bind failed!");
+		close(sock_fd);
+		return;
+	}
 
+	if (listen(sock_fd, players_count) < 0) {
+		perror("Server socket listen failed!");
+		close(sock_fd);
+		return;
+	}
+	
 	Player **players = init_players(players_count, sock_fd);
 	Game *game = init_game(players);
 
