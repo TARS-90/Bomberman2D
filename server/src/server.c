@@ -7,15 +7,14 @@
 #include <stdio.h>
 #include <string.h>
 
-Player **init_players(const int n, const int server_fd) {
+Player **init_players(const int n, const int server_sock_fd) {
 	Player **players = malloc(sizeof(Player*) * n);
 
 	for (int i = 0; i < n; i++) {
-		int id = accept(server_fd, NULL, NULL);
-		int player_number = i+1;
-		printf("Player %d has connected\n", player_number);
-		Player *p = create_player(id, player_number);
-		players[i] = p;
+		int client_sock_fd = accept(server_sock_fd, NULL, NULL);
+		int id = i+1;
+		printf("Player %d has connected\n", id);
+		players[i] = create_player(id);
 	}
 
 	return players;
@@ -31,22 +30,24 @@ Game *init_game(Player **players) {
 }
 
 void run_server(const int players_count) {
-	int server_fd = socket(AF_INET, SOCK_STREAM, 0);
-	int opt = 1;
-	setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+	int sock_fd;
+	struct sockaddr_in sock_addr;
 
-	struct sockaddr_in addr;
-	memset(&addr, 0, sizeof(addr));
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(12345);
-	addr.sin_addr.s_addr = INADDR_ANY;
+	if (sock_fd = socket(AF_INET, SOCK_STREAM, 0) < 0) {
+		printf("Error: Could not create a server socket\n");
+		return;
+	}
 
-	bind(server_fd, (struct sockaddr*)&addr, sizeof(addr));
-	listen(server_fd, players_count);
-	printf("Waiting for the players...");
+	memset(&sock_addr, 0, sizeof(sock_addr));
+	sock_addr.sin_family = AF_INET;
+	sock_addr.sin_port = htons(12345);
+	sock_addr.sin_addr.s_addr = INADDR_ANY;
+	bind(sock_fd, (struct sockaddr*)&sock_addr, sizeof(sock_addr));
 
-	Player **players = init_players(players_count, server_fd);
+	listen(sock_fd, players_count);
+
+	Player **players = init_players(players_count, sock_fd);
 	Game *game = init_game(players);
 
-	close(server_fd);
+	close(sock_fd);
 }

@@ -15,6 +15,6 @@ typedef struct Player {
 
 int set_x(int);
 int set_y(int);
-void *create_player(int, int);
+void *create_player(int);
 
 #endif
