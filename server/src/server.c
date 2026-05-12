@@ -14,7 +14,7 @@ Player **init_players(const int n, const int server_sock_fd) {
 		int client_sock_fd = accept(server_sock_fd, NULL, NULL);
 		int id = i+1;
 		printf("Player %d has connected\n", id);
-		players[i] = create_player(id);
+		players[i] = create_player(id, client_sock_fd);
 	}
 
 	return players;

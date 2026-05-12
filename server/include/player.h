@@ -4,17 +4,17 @@
 #include "enums.h"
 
 typedef struct Player {
-	int id;		// it contains sockfd
+	int id;		
+	int sock_fd;	// it contains client socket file descriptor
 	int x;
 	int y;
 	int health;
 	int bombs;
 	int radius;
-	PlayerColor color;
 } Player;
 
 int set_x(int);
 int set_y(int);
-void *create_player(int);
+void *create_player(int, int);
 
 #endif
