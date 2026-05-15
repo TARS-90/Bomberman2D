@@ -7,7 +7,7 @@ struct Node {
 	struct Node *prev;
 };
 
-void *createList() {
+List *createList() {
 	List *l = malloc(sizeof(List));
 	l->head = NULL;
 	l->tail = NULL;

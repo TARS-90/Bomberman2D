@@ -8,10 +8,7 @@ project(Bomberman2D
 # setting C11 standard for the whole project
 set(CMAKE_C_STANDARD 11)
 
-# adding global headers and structures
-add_library(commons INTERFACE)
-target_include_directories(commons INTERFACE common/include)
 
-# adding subcatalogs that are separated for client and server
+add_subdirectory(commons) # global
 add_subdirectory(server)
 add_subdirectory(client)
