@@ -1,6 +1,7 @@
 #include "server.h"
 #include "player.h"
 #include "game.h"
+#include "queue.h"
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <stdlib.h>
@@ -37,7 +38,7 @@ void run_server(const int players_count) {
 	};
 
 	if ((sock_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-		perror("Server socket creation failed!");
+		perror("Creation failed!");
 		return;
 	}
 
@@ -45,19 +46,20 @@ void run_server(const int players_count) {
 	setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
 	if (bind(sock_fd, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) < 0) {
-		perror("Server socket bind failed!");
+		perror("Bind failed!");
 		close(sock_fd);
 		return;
 	}
 
 	if (listen(sock_fd, players_count) < 0) {
-		perror("Server socket listen failed!");
+		perror("`Listen failed!");
 		close(sock_fd);
 		return;
 	}
 	
 	Player **players = init_players(players_count, sock_fd);
 	Game *game = init_game(players);
+	Queue *queue = createQueue();
 
 	close(sock_fd);
 }

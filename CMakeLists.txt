@@ -10,7 +10,7 @@ set(CMAKE_C_STANDARD 11)
 
 # adding global headers and structures
 add_library(commons INTERFACE)
-target_include_directories(commons INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/common/include)
+target_include_directories(commons INTERFACE common/include)
 
 # adding subcatalogs that are separated for client and server
 add_subdirectory(server)
