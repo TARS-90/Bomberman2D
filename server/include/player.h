@@ -1,11 +1,18 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "enums.h"
+#include <pthread.h>
+
+typedef struct Queue Queue;
+typedef struct ThreadData {
+	pthread_t *thread;
+	Queue *queue;		// shared queue
+	int sock_fd;
+} ThreadData;
 
 typedef struct Player {
 	int id;		
-	int sock_fd;	// it contains client socket file descriptor
+	ThreadData tdata;
 	int x;
 	int y;
 	int health;
@@ -15,6 +22,6 @@ typedef struct Player {
 
 int set_x(int);
 int set_y(int);
-void *create_player(int, int);
+Player *create_player(int);
 
 #endif
