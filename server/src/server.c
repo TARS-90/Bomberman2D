@@ -86,35 +86,41 @@ Player **init_players(Queue *global_queue, const int n, const int server_sock_fd
 	return players;
 }
 
-void run_server(const int players_count) {
-	int sock_fd;
+int init_socket(int *sock_fd, const int players_count) {
 	struct sockaddr_in sock_addr = {
 		.sin_family = AF_INET,
 		.sin_port = htons(12345),
 		.sin_addr.s_addr = INADDR_ANY
 	};
 
-	if ((sock_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+	if ((*sock_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		perror("Creation failed!");
-		return;
+		return -1;
 	}
 
 	int opt = 1;
-	setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+	setsockopt(*sock_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
-	if (bind(sock_fd, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) < 0) {
+	if (bind(*sock_fd, (struct sockaddr*)&sock_addr, sizeof(sock_addr)) < 0) {
 		perror("Bind failed!");
-		close(sock_fd);
-		return;
+		close(*sock_fd);
+		return -1;
 	}
 
-	if (listen(sock_fd, players_count) < 0) {
+	if (listen(*sock_fd, players_count) < 0) {
 		perror("Listen failed!");
-		close(sock_fd);
-		return;
+		close(*sock_fd);
+		return -1;
 	}
 
+	return 0;
+}
+
+void run_server(const int players_count) {
 	// Creating resources
+	int sock_fd;
+	if (init_socket(&sock_fd, players_count) < 0) return;
+
 	Queue *queue = create_queue();
 	Game game = {
 		.players = init_players(queue, players_count, sock_fd),
