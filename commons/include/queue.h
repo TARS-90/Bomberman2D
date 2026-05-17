@@ -12,9 +12,9 @@ struct Queue {
 	size_t size;
 };
 
-Queue *createQueue();
-void deleteQueueDeep(Queue*);
-void deleteQueueShallow(Queue*);
+Queue *create_queue();
+void delete_queue_deep(Queue*);
+void delete_queue_shallow(Queue*);
 void enqueue(Queue*, void*);
 void *dequeue(Queue*);
 

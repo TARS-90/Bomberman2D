@@ -7,7 +7,7 @@ struct Node {
 	struct Node *prev;
 };
 
-List *createList() {
+List *create_list() {
 	List *l = malloc(sizeof(List));
 	l->head = NULL;
 	l->tail = NULL;
@@ -17,7 +17,7 @@ List *createList() {
 }
 
 // deep deleting 
-void deleteListDeep(List *l) {
+void delete_list_deep(List *l) {
 	if (l == NULL) return;
 
 	while (l->head != NULL) {
@@ -31,7 +31,7 @@ void deleteListDeep(List *l) {
 }
 
 // shallow deleting (values in Nodes are NOT! deleted)
-void deleteListShallow(List *l) {
+void delete_list_shallow(List *l) {
 	if (l == NULL) return;
 
 	while (l->head != NULL) {
@@ -64,7 +64,7 @@ void insert(List *l, void *value) {
 	l->size++;
 }
 
-void *getAt(List *l, int index) {
+void *get(List *l, int index) {
 	if (l == NULL || index < 0 || (size_t)index >= l->size) return NULL;
 
 	Node *tmp = l->head;
@@ -75,7 +75,7 @@ void *getAt(List *l, int index) {
 	return tmp->value;
 }
 
-void removeAt(List *l, int index) {
+void remove(List *l, int index) {
 	if (l == NULL || index < 0 || (size_t)index >= l->size) return;
 	
 	Node *tmp = l->head;

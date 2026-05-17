@@ -12,11 +12,11 @@ struct List {
 	size_t size;
 };
 
-List *createList();
-void deleteListDeep(List *l);
-void deleteListShallow(List *l);
+List *create_list();
+void delete_list_deep(List *l);
+void delete_list_shallow(List *l);
 void insert(List*, void*);
-void *getAt(List*, int);
-void removeAt(List*, int);
+void *get(List*, int);
+void remove(List*, int);
 
 #endif 

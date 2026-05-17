@@ -7,7 +7,7 @@ struct Node {
 	struct Node *prev;
 };
 
-Queue *createQueue() {
+Queue *create_queue() {
 	Queue *q = malloc(sizeof(Queue));
 	q->front = NULL;
 	q->rear = NULL;
@@ -17,7 +17,7 @@ Queue *createQueue() {
 }
 
 // deep deleting
-void deleteQueueDeep(Queue *q) {
+void delete_queue_deep(Queue *q) {
 	if (q == NULL) return;
 
 	while (q->front != NULL) {
@@ -31,7 +31,7 @@ void deleteQueueDeep(Queue *q) {
 }
 
 // shallow deleting (values in Nodes are NOT! deleted)
-void deleteQueueShallow(Queue *q) {
+void delete_queue_shallow(Queue *q) {
 	if (q == NULL) return;
 
 	while (q->front != NULL) {
