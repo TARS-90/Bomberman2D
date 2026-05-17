@@ -6,27 +6,51 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
+#include <pthread.h>
 
-Player **init_players(const int n, const int server_sock_fd) {
+
+void *recive_tasks(void *arg) {
+	Player *player = (Player*) arg;
+	ThreadData data = player->tdata;
+	while (1) {
+		char buffer[2];
+		if (recv(data.sock_fd, buffer, sizeof(buffer), 0) < 0) break; // disconected with player
+		printf("Odebrano: %c\n", buffer[0]);
+	}
+
+	return NULL;
+}
+
+void connect_player(Player *player, Queue *global_queue, const int server_sock_fd) {
+	int sock_fd;
+	if ((sock_fd = accept(server_sock_fd, NULL, NULL)) < 0) {
+		perror("Accept player connection failed!\n");
+		return;
+	}
+
+	pthread_t *thread = malloc(sizeof(pthread_t*));
+	player->tdata = (ThreadData) {
+		.thread = thread,
+		.queue = global_queue,
+		.sock_fd = sock_fd,
+	};
+	pthread_create(thread, NULL, *recive_tasks, (void*) player);
+	printf("Player %d has connected\n", player->id);
+}
+
+
+Player **init_players(Queue *global_queue, const int n, const int server_sock_fd) {
 	Player **players = malloc(sizeof(Player*) * n);
 
 	for (int i = 0; i < n; i++) {
-		int client_sock_fd = accept(server_sock_fd, NULL, NULL);
 		int id = i+1;
-		printf("Player %d has connected\n", id);
-		players[i] = create_player(id, client_sock_fd);
+		Player *player = create_player(id);
+		connect_player(player, global_queue, server_sock_fd);
+		players[i] = player;
 	}
 
 	return players;
-}
-
-Game *init_game(Player **players) {
-	Game *game = malloc(sizeof(Game));
-	game->board = create_board();
-	game->players = players;
-	game->is_end = false;
-
-	return game;
 }
 
 void run_server(const int players_count) {
@@ -56,10 +80,14 @@ void run_server(const int players_count) {
 		close(sock_fd);
 		return;
 	}
-	
-	Player **players = init_players(players_count, sock_fd);
-	Game *game = init_game(players);
-	Queue *queue = createQueue();
+
+	Queue *queue = create_queue();
+	Game game = {
+		.players = init_players(queue, players_count, sock_fd),
+		.board = create_board(),
+		.is_end = 0
+	};
+
 
 	close(sock_fd);
 }

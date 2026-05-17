@@ -1,13 +1,12 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <stdbool.h>
 
 typedef struct Player Player;
 typedef struct Game {
 	Player **players;
 	int *board;
-	bool is_end;
+	int is_end;
 } Game;
 
 int *create_board();
