@@ -20,10 +20,12 @@ void *receive_tasks(void *arg) {
 	ThreadData data = player->tdata;
 
 	while (1) {
-		// TODO 
-		// 1. Fixing handling player disconnection
 		MessageType buffer;
-		if (recv(data.sock_fd, &buffer, sizeof(buffer), 0) == 0) {
+		if (recv(data.sock_fd, &buffer, sizeof(buffer), 0) <= 0) {
+			Task *task = malloc(sizeof(Task));
+			task->id = player->id;
+			task->type = MSG_DISCONNECT;
+			enqueue(data.queue, task);
 			printf("Lost connection with player %d\n", player->id);
 			break;
 		}
@@ -171,6 +173,10 @@ void do_tasks(Queue* q) {
 			case MSG_PLACE_BOMB: {
 				// TODO
 				printf("Player %d wants PLACE BOMB\n", task->id);
+				break;
+			}
+			case MSG_DISCONNECT: {
+				// TODO
 				break;
 			}
 		}
