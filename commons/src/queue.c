@@ -12,6 +12,7 @@ Queue *create_queue() {
 	q->front = NULL;
 	q->rear = NULL;
 	q->size = 0;
+	pthread_mutex_init(&(q->mutex), NULL);
 
 	return q;
 }
@@ -46,6 +47,9 @@ void delete_queue_shallow(Queue *q) {
 void enqueue(Queue *q, void *value) {
 	Node *tmp = malloc(sizeof(Node));
 	if (!tmp) return;
+	
+	// locking mutex before reading and writting 
+	pthread_mutex_lock(&(q->mutex));
 
 	tmp->value = value;
 	tmp->next = q->rear;
@@ -60,9 +64,15 @@ void enqueue(Queue *q, void *value) {
 		q->rear = tmp;
 	}
 	q->size++;
+
+	// unlocking
+	pthread_mutex_unlock(&(q->mutex));
 }
 
 void *dequeue(Queue *q) {
+	// locking mutex before reading and writting 
+	pthread_mutex_lock(&(q->mutex));
+
 	if (q->size == 0) return NULL;
 
 	Node *tmp = q->front;
@@ -75,9 +85,11 @@ void *dequeue(Queue *q) {
 	else {
 		q->rear = NULL;
 	}
-
 	free(tmp);
 	q->size--;
+
+	// unlocking
+	pthread_mutex_unlock(&(q->mutex));
 	return value;
 }
 
