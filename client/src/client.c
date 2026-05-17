@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <time.h>
 
 void run_client() {
 	int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -13,6 +14,9 @@ void run_client() {
 
 	connect(sock_fd, (struct sockaddr*)&server_addr, sizeof(server_addr));
 
-	char *msg = "Player connected!\n";
-	send(sock_fd, msg, 18, 0);
+	while (1) {
+		char msg[] = "w\0";
+		send(sock_fd, msg, 2, 0);
+		sleep(1);
+	}
 }
