@@ -28,6 +28,7 @@ typedef enum {
 // ----------- PROTOCOLS ------------
 // Messages types that are sent 
 // between clients and server
+typedef int Message;
 typedef enum {
 	MSG_NONE,
 	MSG_MOVE_UP,

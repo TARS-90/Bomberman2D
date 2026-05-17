@@ -1,4 +1,5 @@
 #include "server.h"
+#include "enums.h"
 #include "player.h"
 #include "game.h"
 #include "queue.h"
@@ -9,20 +10,23 @@
 #include <time.h>
 #include <pthread.h>
 
-
 void *receive_tasks(void *arg) {
 	Player *player = (Player*) arg;
 	ThreadData data = player->tdata;
+
 	while (1) {
 		// TODO 
-		// 1. Have to implement specific protocol to avoid using buffer[2]
-		// 2. Fixing handling player disconnection
-		char buffer[2];
-		if (recv(data.sock_fd, buffer, sizeof(buffer), 0) == 0) {
-			printf("Połączenie zerwane z graczem %d\n", player->id);
-			break; // disconected with player
+		// 1. Fixing handling player disconnection
+		Message buffer;
+		if (recv(data.sock_fd, &buffer, sizeof(buffer), 0) == 0) {
+			printf("Lost connection with player %d\n", player->id);
+			break;
 		}
-		printf("Odebrano: %s\n", buffer);
+
+		Message *msg = malloc(sizeof(Message) * 2);
+		msg[0] = player->id;
+		msg[1] = buffer;
+		enqueue(data.queue, msg);
 	}
 
 	return NULL;
@@ -50,7 +54,7 @@ void connect_player(Player *player, Queue *global_queue, const int server_sock_f
 		.sock_fd = sock_fd,
 	};
 
-	if (pthread_create(thread, NULL, recive_tasks, (void*) player) != 0) {
+	if (pthread_create(thread, NULL, receive_tasks, (void*) player) != 0) {
 		perror("Create thread failed!\n");
 		close(sock_fd);
 		free(thread);
@@ -73,6 +77,40 @@ Player **init_players(Queue *global_queue, const int n, const int server_sock_fd
 	}
 
 	return players;
+}
+
+void do_tasks(Queue* q) {
+	while (q->size) {
+		Message *msg = (Message*) dequeue(q);
+		switch (msg[1]) {
+			case MSG_MOVE_UP: {
+				// TODO
+				printf("Player %d wants MOVE UP\n", msg[0]);
+				break;
+			}
+			case MSG_MOVE_DOWN: {
+				// TODO
+				printf("Player %d wants MOVE DOWN\n", msg[0]);
+				break;
+			}
+			case MSG_MOVE_RIGHT: {
+				// TODO
+				printf("Player %d wants MOVE RIGHT\n", msg[0]);
+				break;
+			}
+			case MSG_MOVE_LEFT: {
+				// TODO
+				printf("Player %d wants MOVE LEFT\n", msg[0]);
+				break;
+			}
+			case MSG_PLACE_BOMB: {
+				// TODO
+				printf("Player %d wants PLACE BOMB\n", msg[0]);
+				break;
+			}
+		}
+		free(msg);
+	}
 }
 
 void run_server(const int players_count) {
@@ -111,8 +149,10 @@ void run_server(const int players_count) {
 		.is_end = 0
 	};
 
+
 	// Main game loop
 	while (!game.is_end) {
+		do_tasks(queue);
 		sleep(1);
 	}
 

@@ -1,7 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-
 typedef struct Player Player;
 typedef struct Game {
 	Player **players;
