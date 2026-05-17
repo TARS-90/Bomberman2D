@@ -10,6 +10,11 @@
 #include <time.h>
 #include <pthread.h>
 
+struct Task {
+	int id;	// player id
+	MessageType type;
+}; 
+
 void *receive_tasks(void *arg) {
 	Player *player = (Player*) arg;
 	ThreadData data = player->tdata;
@@ -17,16 +22,16 @@ void *receive_tasks(void *arg) {
 	while (1) {
 		// TODO 
 		// 1. Fixing handling player disconnection
-		Message buffer;
+		MessageType buffer;
 		if (recv(data.sock_fd, &buffer, sizeof(buffer), 0) == 0) {
 			printf("Lost connection with player %d\n", player->id);
 			break;
 		}
-
-		Message *msg = malloc(sizeof(Message) * 2);
-		msg[0] = player->id;
-		msg[1] = buffer;
-		enqueue(data.queue, msg);
+		
+		Task *task = malloc(sizeof(Task));
+		task->id = player->id;
+		task->type = buffer;
+		enqueue(data.queue, task);
 	}
 
 	return NULL;
@@ -41,7 +46,7 @@ void connect_player(Player *player, Queue *global_queue, const int server_sock_f
 	}
 
 	pthread_t *thread = malloc(sizeof(pthread_t));
-	if (thread == NULL) {
+	if (!thread) {
 		perror("Malloc for thread failed!\n");
 		close(sock_fd);
 		free(player);
@@ -77,40 +82,6 @@ Player **init_players(Queue *global_queue, const int n, const int server_sock_fd
 	}
 
 	return players;
-}
-
-void do_tasks(Queue* q) {
-	while (q->size) {
-		Message *msg = (Message*) dequeue(q);
-		switch (msg[1]) {
-			case MSG_MOVE_UP: {
-				// TODO
-				printf("Player %d wants MOVE UP\n", msg[0]);
-				break;
-			}
-			case MSG_MOVE_DOWN: {
-				// TODO
-				printf("Player %d wants MOVE DOWN\n", msg[0]);
-				break;
-			}
-			case MSG_MOVE_RIGHT: {
-				// TODO
-				printf("Player %d wants MOVE RIGHT\n", msg[0]);
-				break;
-			}
-			case MSG_MOVE_LEFT: {
-				// TODO
-				printf("Player %d wants MOVE LEFT\n", msg[0]);
-				break;
-			}
-			case MSG_PLACE_BOMB: {
-				// TODO
-				printf("Player %d wants PLACE BOMB\n", msg[0]);
-				break;
-			}
-		}
-		free(msg);
-	}
 }
 
 void run_server(const int players_count) {
@@ -171,4 +142,38 @@ void run_server(const int players_count) {
 	free(game.board);
 	delete_queue_deep(queue);
 	free(queue);
+}
+
+void do_tasks(Queue* q) {
+	while (q->size) {
+		Task *task = (Task*) dequeue(q);
+		switch (task->type) {
+			case MSG_MOVE_UP: {
+				// TODO
+				printf("Player %d wants MOVE UP\n", task->id);
+				break;
+			}
+			case MSG_MOVE_DOWN: {
+				// TODO
+				printf("Player %d wants MOVE DOWN\n", task->id);
+				break;
+			}
+			case MSG_MOVE_RIGHT: {
+				// TODO
+				printf("Player %d wants MOVE RIGHT\n", task->id);
+				break;
+			}
+			case MSG_MOVE_LEFT: {
+				// TODO
+				printf("Player %d wants MOVE LEFT\n", task->id);
+				break;
+			}
+			case MSG_PLACE_BOMB: {
+				// TODO
+				printf("Player %d wants PLACE BOMB\n", task->id);
+				break;
+			}
+		}
+		free(task);
+	}
 }

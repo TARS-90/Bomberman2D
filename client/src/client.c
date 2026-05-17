@@ -17,7 +17,7 @@ void run_client() {
 	connect(sock_fd, (struct sockaddr*)&server_addr, sizeof(server_addr));
 
 	while (1) {
-		Message msg;
+		MessageType msg;
 		printf("\nPodaj zadanie: \0");
 		char c;
 		scanf(" %c", &c);
