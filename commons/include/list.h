@@ -16,7 +16,7 @@ List *create_list();
 void delete_list_deep(List *l);
 void delete_list_shallow(List *l);
 void insert(List*, void*);
-void *get(List*, int);
-void remove(List*, int);
+void *get_at(List*, int);
+void remove_at(List*, int);
 
 #endif 
