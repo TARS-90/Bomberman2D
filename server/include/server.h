@@ -9,7 +9,7 @@ typedef struct Game Game;
 void connect_player(Player*, Queue*, const int);
 Player **init_players(Queue*, const int, const int);
 void *receive_tasks(void*);
-void do_tasks(Queue*);
+void do_tasks(Queue*, Game*);
 void run_server(const int);
 
 #endif 

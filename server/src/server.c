@@ -3,6 +3,7 @@
 #include "player.h"
 #include "game.h"
 #include "queue.h"
+#include "list.h"
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <stdlib.h>
@@ -20,9 +21,14 @@ void *receive_tasks(void *arg) {
 	ThreadData data = player->tdata;
 
 	while (1) {
+		Task *task = malloc(sizeof(Task));
+		if (!task) {
+			perror("Malloc for task failed!\n");
+			break;
+		}
+
 		MessageType buffer;
 		if (recv(data.sock_fd, &buffer, sizeof(buffer), 0) <= 0) {
-			Task *task = malloc(sizeof(Task));
 			task->id = player->id;
 			task->type = MSG_DISCONNECT;
 			enqueue(data.queue, task);
@@ -30,7 +36,6 @@ void *receive_tasks(void *arg) {
 			break;
 		}
 		
-		Task *task = malloc(sizeof(Task));
 		task->id = player->id;
 		task->type = buffer;
 		enqueue(data.queue, task);
@@ -131,7 +136,7 @@ void run_server(const int players_count) {
 
 	// Main game loop
 	while (!game.is_end) {
-		do_tasks(queue);
+		do_tasks(queue, &game);
 		sleep(1);
 	}
 
@@ -152,40 +157,107 @@ void run_server(const int players_count) {
 	free(queue);
 }
 
-void do_tasks(Queue* q) {
+
+
+
+#define HEIGHT 17
+#define WIDTH  17
+int is_tile_empty(Game *g, int x, int y) {
+	int index = (x * HEIGHT) + y;
+	return g->board[index] == OBJECT_EMPTY;
+}
+
+int check_move(Game *g, int x, int y) {
+	if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
+		return 0; // false
+
+	return is_tile_empty(g, x, y);
+}
+
+// Creating game board as a list to store lists of tasks that 
+// needs to be done on each position on the board
+List *board_as_list() {
+	List *board = create_list();
+	if (!board) {
+		perror("Malloc for results list failed!\n");
+		return NULL;
+	}
+
+	for (int i = 0; i < HEIGHT*WIDTH; i++) {
+		List *tasks = create_list();
+		if (!tasks) {
+			perror("Malloc for tasks list failed!\n");
+			return NULL;
+		}
+		insert(board, tasks);
+	}
+
+	return board; 
+}
+
+List *process_task_queue(Queue *q, Game *g) {
+	List *results = board_as_list();	
+
 	while (q->size) {
 		Task *task = (Task*) dequeue(q);
+		int player_index = task->id - 1;
+		int x = g->players[player_index]->x;
+		int y = g->players[player_index]->y;
+
 		switch (task->type) {
-			case MSG_MOVE_UP: {
+			case MSG_DISCONNECT: {
 				// TODO
-				printf("Player %d wants MOVE UP\n", task->id);
-				break;
-			}
-			case MSG_MOVE_DOWN: {
-				// TODO
-				printf("Player %d wants MOVE DOWN\n", task->id);
-				break;
-			}
-			case MSG_MOVE_RIGHT: {
-				// TODO
-				printf("Player %d wants MOVE RIGHT\n", task->id);
-				break;
-			}
-			case MSG_MOVE_LEFT: {
-				// TODO
-				printf("Player %d wants MOVE LEFT\n", task->id);
+				free(task);
 				break;
 			}
 			case MSG_PLACE_BOMB: {
-				// TODO
-				printf("Player %d wants PLACE BOMB\n", task->id);
+				if (is_tile_empty(g, x, y)) {
+					int index = (x * HEIGHT) + y;
+					List *tasks_list = (List*) get_at(results, index);
+					insert(tasks_list, task);
+				}
+				else {
+					free(task);
+				}
+				
 				break;
 			}
-			case MSG_DISCONNECT: {
-				// TODO
-				break;
+			default: {
+				// if task is about moving, then there is computing
+				// wanted position
+				x += ((task->type == MSG_MOVE_RIGHT) ? 1 : 0);
+				x -= ((task->type == MSG_MOVE_LEFT) ? 1 : 0);
+				y += ((task->type == MSG_MOVE_DOWN) ? 1 : 0);
+				y -= ((task->type == MSG_MOVE_UP) ? 1 : 0);
+				if (check_move(g, x, y)) {
+					int index = (x * HEIGHT) + y;
+					List *tasks_list = (List*) get_at(results, index);
+					insert(tasks_list, task);
+				}
+				else {
+					free(task);
+				}
 			}
 		}
-		free(task);
 	}
+
+	return results;
+}
+
+void execute_task(Game *g, Task *t) {
+	// TODO
+}
+
+void do_tasks(Queue* q, Game *g) {
+	List *board = process_task_queue(q, g);
+	for (int i = 0; i < WIDTH*HEIGHT; i++) {
+		List *tasks = (List*) get_at(board, i);
+		if (tasks->size > 0) {
+			int rnd = rand() % tasks->size;
+			Task *task = (Task*) get_at(tasks, rnd);
+			execute_task(g, task);
+		}
+		delete_list_deep(tasks);
+	}
+	delete_list_deep(board);
 }
