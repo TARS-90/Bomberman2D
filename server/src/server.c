@@ -246,6 +246,29 @@ List *process_task_queue(Queue *q, Game *g) {
 
 void execute_task(Game *g, Task *t) {
 	// TODO
+	
+	switch (t->type) {
+		case 1: {
+			printf("Player %d wants MOVE UP\n", t->id);
+			break;
+		}
+		case 2: {
+			printf("Player %d wants MOVE DOWN\n", t->id);
+			break;
+		}
+		case 3: {
+			printf("Player %d wants MOVE RIGHT\n", t->id);
+			break;
+		}
+		case 4: {
+			printf("Player %d wants MOVE LEFT\n", t->id);
+			break;
+		}
+		case 5: {
+			printf("Player %d wants PLACE BOMB\n", t->id);
+			break;
+		}
+	}
 }
 
 void do_tasks(Queue* q, Game *g) {
@@ -259,5 +282,7 @@ void do_tasks(Queue* q, Game *g) {
 		}
 		delete_list_deep(tasks);
 	}
-	delete_list_deep(board);
+	// using shallow deleting because the values are deleted higher in delete_list_deep()
+	// to avoid double free()
+	delete_list_shallow(board);
 }
