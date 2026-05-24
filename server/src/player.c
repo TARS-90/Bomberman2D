@@ -1,8 +1,6 @@
 #include "player.h"
+#include "enums.h"
 #include <stdlib.h>
-
-#define MAX_GAME_WIDTH	17
-#define MAX_GAME_HEIGHT 17
 
 /*
  *	HORIZONTAL POSITIONING
@@ -11,8 +9,8 @@
  *  Players 2 and 4 will be at RIGHT
 */
 int set_x(int player_number) {
-	if (player_number == 1 || player_number == 3) return 1;
-	return MAX_GAME_WIDTH - 2;
+	if (player_number == 1 || player_number == 3) return 0;
+	return WIDTH - 1;
 }
 
 /*
@@ -22,8 +20,8 @@ int set_x(int player_number) {
  *  Players 2 and 3 will be at BOTTOM
 */
 int set_y(int player_number) {
-	if (player_number == 1 || player_number == 4) return 1;
-	return MAX_GAME_HEIGHT - 2;
+	if (player_number == 1 || player_number == 4) return 0;
+	return HEIGHT - 1;
 }
 
 Player *create_player(int id) {
