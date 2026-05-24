@@ -51,32 +51,24 @@ void run_server(const int players_count) {
 			do_tasks(queue, &game);
 			send_game_state(&game);
 		}
-		sleep(1);
+		usleep(FRAME_DURATION);
 	}
 
 
 	// Release resources
 	close(sock_fd);
-	for (int i = 0; i < players_count; i++) {
-		Player *p = game.players[i];
-		if (p != NULL) {
-			pthread_join(*p->tdata.thread, NULL);
-			free(p->tdata.thread);
-			free(p);
-		}
+	for (int i = 0; i < MAX_PLAYERS; i++) {
+		delete_player(game.players[i]);
 	}
 	free(game.players);
 	free(game.board);
 	delete_queue_deep(queue);
-	free(queue);
 }
-
-
 
 void copy_players(GameState *game_state, Game *g) {
 	for (int i = 0; i < MAX_PLAYERS; i++) {
-		if (g->players[i] != NULL) {
-			Player *p = g->players[i];
+		Player *p = g->players[i];
+		if (p != NULL) {
 			game_state->players[i] = (PlayerState) {
 				.x = p->x,
 				.y = p->y,
@@ -84,7 +76,7 @@ void copy_players(GameState *game_state, Game *g) {
 			};
 		} 
 		else {
-			game_state->players[i] = (PlayerState) { -1, -1, -1 };
+			game_state->players[i] = (PlayerState) { -1, -1, -1 }; // it means that there is no player
 		}
 	}
 }

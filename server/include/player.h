@@ -23,5 +23,6 @@ typedef struct Player {
 int set_x(int);
 int set_y(int);
 Player *create_player(int);
+void delete_player(Player*);
 
 #endif

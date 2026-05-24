@@ -40,3 +40,11 @@ Player *create_player(int id) {
 	return p;
 }
 
+void delete_player(Player *p) {
+	if (p != NULL) {
+		pthread_join(*p->tdata.thread, NULL);
+		free(p->tdata.thread);
+		free(p);
+	}
+}
+
