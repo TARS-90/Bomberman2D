@@ -1,6 +1,15 @@
 #ifndef ENUMS_H
 #define ENUMS_H
 
+// ------ GLOBAL VARIABLES ----------
+// Variables for both: client and 
+// server
+#define MAX_PLAYERS 4
+#define WIDTH	17
+#define HEIGHT	17
+// ----------------------------------
+
+
 // -------- PLAYER COLORS -----------
 // Each player has its own color
 typedef enum {
@@ -17,10 +26,10 @@ typedef enum {
 // on the game board
 typedef enum {
 	OBJECT_EMPTY,	
-	OBJECT_PLAYER,
 	OBJECT_WALL,
 	OBJECT_CHEST,
-	OBJECT_BOMB
+	OBJECT_BOMB,
+	OBJECT_BONUS
 } ObjectType;
 // ----------------------------------
 
@@ -35,9 +44,19 @@ typedef enum {
 	MSG_MOVE_RIGHT,
 	MSG_MOVE_LEFT,
 	MSG_PLACE_BOMB,
-	MSG_STATE_UPDATE,
 	MSG_DISCONNECT
 } MessageType;
+
+typedef struct PlayerState {
+	int x;
+	int y;
+	PlayerColor color;
+} PlayerState;
+
+typedef struct GameState {
+	PlayerState players[MAX_PLAYERS];
+	int board[WIDTH*HEIGHT];
+} GameState;
 // ---------------------------------
 
 #endif
