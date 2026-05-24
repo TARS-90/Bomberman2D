@@ -10,7 +10,7 @@
 
 int is_tile_empty(Game *g, int x, int y) {
 	int index = (x * HEIGHT) + y;
-	return g->board[index] == OBJECT_EMPTY && !is_tile_player(g, x, y);
+	return g->board[index] == OBJECT_EMPTY;
 }
 
 int is_tile_bonus(Game *g, int x, int y) {
@@ -37,7 +37,12 @@ int check_move(Game *g, int x, int y) {
 		return 0; // false
 
 	// player can move if
-	return	is_tile_empty(g, x, y) || is_tile_bonus(g, x, y);
+	// there is empty tile and it isn't occupied by any player or
+	// there is just bonus
+	//
+	// players aren't stored in board so there is need to check them
+	return	( is_tile_empty(g, x, y) && !is_tile_player(g, x, y) ) || 
+		is_tile_bonus(g, x, y);
 }
 
 // Creating game board as a list to store lists of tasks that 
