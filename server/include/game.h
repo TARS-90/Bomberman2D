@@ -9,7 +9,6 @@ typedef struct Game {
 } Game;
 
 int *create_board();
-void run_game();
 void delete_game(Game*);
 
 #endif

@@ -2,16 +2,6 @@
 #include "enums.h"
 #include <stdlib.h>
 
-#define WIDTH 17
-#define HEIGHT 17
-
-struct Bomb {
-	int x;
-	int y;
-	int time;
-	int radius;
-};
-
 int *create_board() {
 	int *board = malloc((WIDTH * HEIGHT) * sizeof(int));
 
@@ -25,14 +15,6 @@ int *create_board() {
 	}
 
 	return board;
-}
-
-
-
-void run_game(Game *game) {
-	while (!game->is_end) {
-		
-	}
 }
 
 void delete_game(Game *game) {
