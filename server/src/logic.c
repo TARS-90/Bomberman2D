@@ -1,72 +1,13 @@
-#include "server.h"
-#include "enums.h"
-#include "network.h"
 #include "logic.h"
-#include "player.h"
-#include "game.h"
+#include "enums.h"
 #include "queue.h"
 #include "list.h"
-#include <unistd.h>
-#include <sys/socket.h>
+#include "game.h"
+#include "network.h"
+#include "player.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
-#include <pthread.h>
 
-Player **init_players(Queue *global_queue, const int n, const int server_sock_fd) {
-	Player **players = malloc(sizeof(Player*) * n);
-
-	for (int i = 0; i < n; i++) {
-		int id = i+1;
-		Player *player = create_player(id);
-		connect_player(player, global_queue, server_sock_fd);
-		players[i] = player;
-	}
-
-	return players;
-}
-
-void run_server(const int players_count) {
-	// Creating resources
-	int sock_fd;
-	if (init_socket(&sock_fd, players_count) < 0) return;
-
-	Queue *queue = create_queue();
-	Game game = {
-		.players = init_players(queue, players_count, sock_fd),
-		.board = create_board(),
-		.is_end = 0
-	};
-
-
-	// Main game loop
-	while (!game.is_end) {
-		do_tasks(queue, &game);
-		sleep(1);
-	}
-
-
-	// Release resources
-	close(sock_fd);
-	for (int i = 0; i < players_count; i++) {
-		Player *p = game.players[i];
-		if (p != NULL) {
-			pthread_join(*p->tdata.thread, NULL);
-			free(p->tdata.thread);
-			free(p);
-		}
-	}
-	free(game.players);
-	free(game.board);
-	delete_queue_deep(queue);
-	free(queue);
-}
-
-
-
-
-#define HEIGHT 17
-#define WIDTH  17
 int is_tile_empty(Game *g, int x, int y) {
 	int index = (x * HEIGHT) + y;
 	return g->board[index] == OBJECT_EMPTY;
@@ -110,7 +51,7 @@ List *process_task_queue(Queue *q, Game *g) {
 
 	while (q->size) {
 		Task *task = (Task*) dequeue(q);
-		int player_index = task->id - 1;
+		int player_index = task->player_id - 1;
 		// player position
 		int x = g->players[player_index]->x;
 		int y = g->players[player_index]->y;
@@ -156,7 +97,7 @@ List *process_task_queue(Queue *q, Game *g) {
 }
 
 void execute_task(Game *g, Task *t) {
-	int player_index = t->id - 1;
+	int player_index = t->player_id - 1;
 	Player *p = g->players[player_index];
 
 	switch (t->type) {
@@ -198,3 +139,5 @@ void do_tasks(Queue* q, Game *g) {
 	// to avoid double free()
 	delete_list_shallow(board);
 }
+
+

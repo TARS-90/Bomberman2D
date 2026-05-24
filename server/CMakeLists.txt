@@ -1,4 +1,6 @@
 set(SOURCES 
+	src/logic.c
+	src/network.c
 	src/game.c
 	src/player.c
 	src/server.c)

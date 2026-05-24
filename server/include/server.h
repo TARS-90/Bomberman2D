@@ -1,15 +1,15 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-typedef struct Task Task;
 typedef struct Queue Queue;
 typedef struct Player Player;
 typedef struct Game Game;
+typedef struct GameState GameState;
 
-void connect_player(Player*, Queue*, const int);
 Player **init_players(Queue*, const int, const int);
-void *receive_tasks(void*);
-void do_tasks(Queue*, Game*);
 void run_server(const int);
+void send_game_state(Game*, const int);
+void copy_players(GameState*, Game*, const int);
+void copy_game_board(GameState*, Game*);
 
 #endif 
