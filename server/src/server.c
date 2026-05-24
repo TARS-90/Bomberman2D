@@ -39,9 +39,13 @@ void run_server(const int players_count) {
 	};
 
 
+	send_game_state(&game, players_count);
 	// Main game loop
 	while (!game.is_end) {
-		do_tasks(queue, &game);
+		if (queue->size > 0) {
+			do_tasks(queue, &game);
+			send_game_state(&game, players_count);
+		}
 		sleep(1);
 	}
 
@@ -64,137 +68,36 @@ void run_server(const int players_count) {
 
 
 
-
-#define HEIGHT 17
-#define WIDTH  17
-int is_tile_empty(Game *g, int x, int y) {
-	int index = (x * HEIGHT) + y;
-	return g->board[index] == OBJECT_EMPTY;
+void copy_players(GameState *game_state, Game *g, int player_count) {
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        if (i < player_count && g->players[i] != NULL) {
+            Player *p = g->players[i];
+            game_state->players[i] = (PlayerState) {
+                .x = p->x,
+                .y = p->y,
+                .color = p->id - 1
+            };
+        } else {
+            game_state->players[i] = (PlayerState) { -1, -1, -1 };
+        }
+    }
 }
 
-int is_tile_bonus(Game *g, int x, int y) {
-	int index = (x * HEIGHT) + y;
-	return g->board[index] == OBJECT_BONUS;
-}
-
-int check_move(Game *g, int x, int y) {
-	if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
-		return 0; // false
-
-	return is_tile_empty(g, x, y) || is_tile_bonus(g, x, y);
-}
-
-// Creating game board as a list to store lists of tasks that 
-// needs to be done on each position on the board
-List *board_as_list() {
-	List *board = create_list();
-	if (!board) {
-		perror("Malloc for results list failed!\n");
-		return NULL;
-	}
-
+void copy_game_board(GameState *game_state, Game *g) {
 	for (int i = 0; i < HEIGHT*WIDTH; i++) {
-		List *tasks = create_list();
-		if (!tasks) {
-			perror("Malloc for tasks list failed!\n");
-			return NULL;
-		}
-		insert(board, tasks);
-	}
-
-	return board; 
-}
-
-List *process_task_queue(Queue *q, Game *g) {
-	List *results = board_as_list();	
-
-	while (q->size) {
-		Task *task = (Task*) dequeue(q);
-		int player_index = task->id - 1;
-		// player position
-		int x = g->players[player_index]->x;
-		int y = g->players[player_index]->y;
-
-		switch (task->type) {
-			case MSG_DISCONNECT: {
-				// TODO
-				free(task);
-				break;
-			}
-			case MSG_PLACE_BOMB: {
-				if (is_tile_empty(g, x, y)) {
-					int index = (x * HEIGHT) + y;
-					List *tasks_list = (List*) get_at(results, index);
-					insert(tasks_list, task);
-				}
-				else {
-					free(task);
-				}
-				
-				break;
-			}
-			default: {
-				// if task is about moving, then there is computing
-				// wanted destination
-				x += ((task->type == MSG_MOVE_RIGHT) ? 1 : 0);
-				x -= ((task->type == MSG_MOVE_LEFT) ? 1 : 0);
-				y += ((task->type == MSG_MOVE_DOWN) ? 1 : 0);
-				y -= ((task->type == MSG_MOVE_UP) ? 1 : 0);
-				if (check_move(g, x, y)) {
-					int index = (x * HEIGHT) + y;
-					List *tasks_list = (List*) get_at(results, index);
-					insert(tasks_list, task);
-				}
-				else {
-					free(task);
-				}
-			}
-		}
-	}
-
-	return results;
-}
-
-void execute_task(Game *g, Task *t) {
-	int player_index = t->id - 1;
-	Player *p = g->players[player_index];
-
-	switch (t->type) {
-		case MSG_MOVE_UP: {
-			p->y--;
-			break;
-		}
-		case MSG_MOVE_DOWN: {
-			p->y++;
-			break;
-		}
-		case MSG_MOVE_RIGHT: {
-			p->x++;
-			break;
-		}
-		case MSG_MOVE_LEFT: {
-			p->x--;
-			break;
-		}
-		case MSG_PLACE_BOMB: {
-			// TODO
-			break;
-		}
+		game_state->board[i] = g->board[i];
 	}
 }
 
-void do_tasks(Queue* q, Game *g) {
-	List *board = process_task_queue(q, g);
-	for (int i = 0; i < WIDTH*HEIGHT; i++) {
-		List *tasks = (List*) get_at(board, i);
-		if (tasks->size > 0) {
-			int rnd = rand() % tasks->size;
-			Task *task = (Task*) get_at(tasks, rnd);
-			execute_task(g, task);
+void send_game_state(Game *g, const int player_count) { 
+	GameState game_state;
+	copy_players(&game_state, g, player_count);
+	copy_game_board(&game_state, g);
+
+	for (int i = 0; i < player_count; i++) {
+		Player *p = g->players[i];
+		if (p != NULL) {
+			send(p->tdata.sock_fd, &game_state, sizeof(GameState), 0);
 		}
-		delete_list_deep(tasks);
 	}
-	// using shallow deleting because the values are deleted higher in delete_list_deep()
-	// to avoid double free()
-	delete_list_shallow(board);
 }
