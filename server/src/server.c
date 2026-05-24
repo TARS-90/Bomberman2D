@@ -14,13 +14,18 @@
 #include <pthread.h>
 
 Player **init_players(Queue *global_queue, const int n, const int server_sock_fd) {
-	Player **players = malloc(sizeof(Player*) * n);
+	Player **players = malloc(sizeof(Player*) * MAX_PLAYERS);
 
-	for (int i = 0; i < n; i++) {
-		int id = i+1;
-		Player *player = create_player(id);
-		connect_player(player, global_queue, server_sock_fd);
-		players[i] = player;
+	for (int i = 0; i < MAX_PLAYERS; i++) {
+		if (i < n) {
+			int id = i+1;
+			Player *player = create_player(id);
+			connect_player(player, global_queue, server_sock_fd);
+			players[i] = player;
+		}
+		else {
+			players[i] = NULL;
+		}
 	}
 
 	return players;
@@ -39,12 +44,12 @@ void run_server(const int players_count) {
 	};
 
 
-	send_game_state(&game, players_count);
+	send_game_state(&game);
 	// Main game loop
 	while (!game.is_end) {
 		if (queue->size > 0) {
 			do_tasks(queue, &game);
-			send_game_state(&game, players_count);
+			send_game_state(&game);
 		}
 		sleep(1);
 	}
@@ -68,19 +73,20 @@ void run_server(const int players_count) {
 
 
 
-void copy_players(GameState *game_state, Game *g, int player_count) {
-    for (int i = 0; i < MAX_PLAYERS; i++) {
-        if (i < player_count && g->players[i] != NULL) {
-            Player *p = g->players[i];
-            game_state->players[i] = (PlayerState) {
-                .x = p->x,
-                .y = p->y,
-                .color = p->id - 1
-            };
-        } else {
-            game_state->players[i] = (PlayerState) { -1, -1, -1 };
-        }
-    }
+void copy_players(GameState *game_state, Game *g) {
+	for (int i = 0; i < MAX_PLAYERS; i++) {
+		if (g->players[i] != NULL) {
+			Player *p = g->players[i];
+			game_state->players[i] = (PlayerState) {
+				.x = p->x,
+				.y = p->y,
+				.color = p->id - 1
+			};
+		} 
+		else {
+			game_state->players[i] = (PlayerState) { -1, -1, -1 };
+		}
+	}
 }
 
 void copy_game_board(GameState *game_state, Game *g) {
@@ -89,12 +95,12 @@ void copy_game_board(GameState *game_state, Game *g) {
 	}
 }
 
-void send_game_state(Game *g, const int player_count) { 
+void send_game_state(Game *g) { 
 	GameState game_state;
-	copy_players(&game_state, g, player_count);
+	copy_players(&game_state, g);
 	copy_game_board(&game_state, g);
 
-	for (int i = 0; i < player_count; i++) {
+	for (int i = 0; i < MAX_PLAYERS; i++) {
 		Player *p = g->players[i];
 		if (p != NULL) {
 			send(p->tdata.sock_fd, &game_state, sizeof(GameState), 0);

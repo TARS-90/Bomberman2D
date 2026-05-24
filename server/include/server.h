@@ -8,8 +8,8 @@ typedef struct GameState GameState;
 
 Player **init_players(Queue*, const int, const int);
 void run_server(const int);
-void send_game_state(Game*, const int);
-void copy_players(GameState*, Game*, const int);
+void send_game_state(Game*);
+void copy_players(GameState*, Game*);
 void copy_game_board(GameState*, Game*);
 
 #endif 

@@ -10,7 +10,7 @@
 
 int is_tile_empty(Game *g, int x, int y) {
 	int index = (x * HEIGHT) + y;
-	return g->board[index] == OBJECT_EMPTY;
+	return g->board[index] == OBJECT_EMPTY && !is_tile_player(g, x, y);
 }
 
 int is_tile_bonus(Game *g, int x, int y) {
@@ -18,11 +18,26 @@ int is_tile_bonus(Game *g, int x, int y) {
 	return g->board[index] == OBJECT_BONUS;
 }
 
+int is_tile_player(Game *g, int x, int y) {
+	int is_occupied = 0;
+
+	for (int i = 0; i < MAX_PLAYERS; i++) {
+		Player *p = g->players[i];
+		if (p != NULL && p->x == x && p->y == y) {
+			is_occupied = 1;
+		}
+	}
+
+	return is_occupied;
+}
+
 int check_move(Game *g, int x, int y) {
+	// checking crossing board bounds
 	if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
 		return 0; // false
 
-	return is_tile_empty(g, x, y) || is_tile_bonus(g, x, y);
+	// player can move if
+	return	is_tile_empty(g, x, y) || is_tile_bonus(g, x, y);
 }
 
 // Creating game board as a list to store lists of tasks that 

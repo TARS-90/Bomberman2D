@@ -1,6 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "enums.h"
+
 typedef struct Player Player;
 typedef struct Game {
 	Player **players;
