@@ -78,7 +78,7 @@ void run_client() {
             send(sock_fd, &msg, sizeof(msg), 0);
         }
         
-        usleep(50000); // 50ms
+        usleep(FRAME_DURATION); // 50ms
     }
 
     close(sock_fd);

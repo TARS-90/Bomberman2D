@@ -5,6 +5,7 @@
 // Variables for both: client and 
 // server
 #define MAX_PLAYERS 4
+#define FRAME_DURATION 16666
 #define WIDTH	17
 #define HEIGHT	17
 // ----------------------------------
