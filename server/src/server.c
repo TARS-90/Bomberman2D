@@ -167,11 +167,16 @@ int is_tile_empty(Game *g, int x, int y) {
 	return g->board[index] == OBJECT_EMPTY;
 }
 
+int is_tile_bonus(Game *g, int x, int y) {
+	int index = (x * HEIGHT) + y;
+	return g->board[index] == OBJECT_BONUS;
+}
+
 int check_move(Game *g, int x, int y) {
 	if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
 		return 0; // false
 
-	return is_tile_empty(g, x, y);
+	return is_tile_empty(g, x, y) || is_tile_bonus(g, x, y);
 }
 
 // Creating game board as a list to store lists of tasks that 
@@ -201,6 +206,7 @@ List *process_task_queue(Queue *q, Game *g) {
 	while (q->size) {
 		Task *task = (Task*) dequeue(q);
 		int player_index = task->id - 1;
+		// player position
 		int x = g->players[player_index]->x;
 		int y = g->players[player_index]->y;
 
@@ -224,7 +230,7 @@ List *process_task_queue(Queue *q, Game *g) {
 			}
 			default: {
 				// if task is about moving, then there is computing
-				// wanted position
+				// wanted destination
 				x += ((task->type == MSG_MOVE_RIGHT) ? 1 : 0);
 				x -= ((task->type == MSG_MOVE_LEFT) ? 1 : 0);
 				y += ((task->type == MSG_MOVE_DOWN) ? 1 : 0);
@@ -245,27 +251,28 @@ List *process_task_queue(Queue *q, Game *g) {
 }
 
 void execute_task(Game *g, Task *t) {
-	// TODO
-	
+	int player_index = t->id - 1;
+	Player *p = g->players[player_index];
+
 	switch (t->type) {
-		case 1: {
-			printf("Player %d wants MOVE UP\n", t->id);
+		case MSG_MOVE_UP: {
+			p->y--;
 			break;
 		}
-		case 2: {
-			printf("Player %d wants MOVE DOWN\n", t->id);
+		case MSG_MOVE_DOWN: {
+			p->y++;
 			break;
 		}
-		case 3: {
-			printf("Player %d wants MOVE RIGHT\n", t->id);
+		case MSG_MOVE_RIGHT: {
+			p->x++;
 			break;
 		}
-		case 4: {
-			printf("Player %d wants MOVE LEFT\n", t->id);
+		case MSG_MOVE_LEFT: {
+			p->x--;
 			break;
 		}
-		case 5: {
-			printf("Player %d wants PLACE BOMB\n", t->id);
+		case MSG_PLACE_BOMB: {
+			// TODO
 			break;
 		}
 	}
