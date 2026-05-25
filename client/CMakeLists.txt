@@ -1,6 +1,7 @@
 find_package(SDL3 REQUIRED) 
 
 set(SOURCES 
+	src/sdl_engine.c
 	src/client.c)
 
 add_executable(client src/main.c)

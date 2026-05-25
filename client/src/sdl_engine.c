@@ -14,7 +14,7 @@ const SDL_Color COLORS[] = {
 	[COLOR_WHITE]	 = { .r = 255, .g = 255, .b = 255, .a = 255 }
 };
 SDL_Window *window; // main window
-SDL_RenderContext *context;
+SDL_Renderer *context;
 
 int sdl_engine_init() {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -88,7 +88,7 @@ void sdl_engine_render(GameState *game) {
 
 void sdl_engine_shutdown() {
 	if (context) {
-		SDL_DestroyRenderContext(context);
+		SDL_DestroyRenderer(context);
 	}
 	if (window) {
 		SDL_DestroyWindow(window);
