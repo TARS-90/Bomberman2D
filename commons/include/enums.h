@@ -17,8 +17,12 @@ typedef enum {
 	COLOR_RED,
 	COLOR_BLUE,
 	COLOR_GREEN,
-	COLOR_YELLOW
-} PlayerColor;
+	COLOR_YELLOW,
+	COLOR_BROWN,
+	COLOR_PURPLE,
+	COLOR_DARKBLUE
+	COLOR_BLACK,
+} Color;
 // ----------------------------------
 
 
@@ -51,7 +55,7 @@ typedef enum {
 typedef struct PlayerState {
 	int x;
 	int y;
-	PlayerColor color;
+	Color color;
 } PlayerState;
 
 typedef struct GameState {
