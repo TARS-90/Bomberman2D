@@ -43,13 +43,18 @@ void run_server(const int players_count) {
 		.is_end = 0
 	};
 
+	// sending protocol to each player to start game
+	send_start_game(&game);
 
-	send_game_state(&game);
+	// setting delay to make sure every player
+	// will connect without issues
+//	sleep(1);
+
 	// Main game loop
 	while (!game.is_end) {
+		send_game_state(&game);
 		if (queue->size > 0) {
 			do_tasks(queue, &game);
-			send_game_state(&game);
 		}
 		usleep(FRAME_DURATION);
 	}
@@ -91,11 +96,22 @@ void send_game_state(Game *g) {
 	GameState game_state;
 	copy_players(&game_state, g);
 	copy_game_board(&game_state, g);
+	game_state.is_end = g->is_end;
 
 	for (int i = 0; i < MAX_PLAYERS; i++) {
 		Player *p = g->players[i];
 		if (p != NULL) {
 			send(p->tdata.sock_fd, &game_state, sizeof(GameState), 0);
+		}
+	}
+}
+
+void send_start_game(Game *g) {
+	MessageType msg = MSG_START_GAME;
+	for (int i = 0; i < MAX_PLAYERS; i++) {
+		Player *p = g->players[i];
+		if (p != NULL) {
+			send(p->tdata.sock_fd, &msg, sizeof(MessageType), 0);
 		}
 	}
 }

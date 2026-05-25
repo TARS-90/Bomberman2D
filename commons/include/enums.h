@@ -50,7 +50,8 @@ typedef enum {
 	MSG_MOVE_RIGHT,
 	MSG_MOVE_LEFT,
 	MSG_PLACE_BOMB,
-	MSG_DISCONNECT
+	MSG_DISCONNECT,
+	MSG_START_GAME
 } MessageType;
 
 typedef struct PlayerState {
@@ -62,6 +63,7 @@ typedef struct PlayerState {
 typedef struct GameState {
 	PlayerState players[MAX_PLAYERS];
 	int board[WIDTH*HEIGHT];
+	int is_end;
 } GameState;
 // ---------------------------------
 
