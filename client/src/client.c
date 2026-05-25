@@ -7,10 +7,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <pthread.h>
-
-#define WIDTH 17 
-#define HEIGHT 17
-#define MAX_PLAYERS 4
+#include <SDL3/SDL.h>
 
 void print_game(GameState *gs) {
     system("clear");
