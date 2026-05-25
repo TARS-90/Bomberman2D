@@ -1,5 +1,6 @@
 #include "client.h"
 #include "enums.h"
+#include "sdl_engine.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <arpa/inet.h>

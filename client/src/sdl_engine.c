@@ -10,14 +10,15 @@ const SDL_Color COLORS[] = {
 	[COLOR_BROWN]    = { .r = 139, .g = 69,  .b = 19,  .a = 255 }, 
 	[COLOR_PURPLE]   = { .r = 128, .g = 0,   .b = 128, .a = 255 }, 
 	[COLOR_DARKBLUE] = { .r = 0,   .g = 0,   .b = 139, .a = 255 }, 
-	[COLOR_BLACK]    = { .r = 20,  .g = 20,  .b = 20,  .a = 255 }  
+	[COLOR_BLACK]    = { .r = 20,  .g = 20,  .b = 20,  .a = 255 }, 
+	[COLOR_WHITE]	 = { .r = 255, .g = 255, .b = 255, .a = 255 }
 };
 SDL_Window *window; // main window
-SDL_RenderContex *context;
+SDL_RenderContext *context;
 
-void sdl_engine_init() {
-	SDL_Init();
-
+int sdl_engine_init() {
+	SDL_Init(SDL_INIT_VIDEO);
+	
 	window = SDL_CreateWindow(
 		"Bomberman 2D",		// title	
 		WIN_WIDTH,		// window width
@@ -26,45 +27,73 @@ void sdl_engine_init() {
 	);
 	if (!window) {
 		perror("Create SDL_Window failed!\n");
-		return;
+		return -1;
 	}
 
-	if((surface = SDL_GetWindowSurface(window)) == NULL) {
-		perror("Getting SDL_Surface failed!\n");
-		sdl_engine_shutdown();
+	context = SDL_CreateRenderer(window, NULL);
+	if (!context) {
+		perror("Create SDL_RenderContext failed!\n");
+		return -1;
 	}
+
+	return 0;		
 }
 
 void sdl_engine_render(GameState *game) {
-	SDL_Color c = COLORS[COLOR_BLACK];
-	SDL_SetRenderDrawColor(context, c.r, c.g, c.b, c.a);
+	SDL_Color color = COLORS[COLOR_BLACK];
+	SDL_SetRenderDrawColor(context, color.r, color.g, color.b, color.a);
+	SDL_RenderClear(context);
+
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
+			int is_player_drawn = 0; 
 
-			// drawing players
-			PlayerState player;
-			int is_player_draw = 0; 
+			// players
 			for (int i = 0; i < MAX_PLAYERS; i++) {
-				player = game->players[i];
+				PlayerState player = game->players[i];
 				if (player.x == x && player.y == y) {
-
-					is_player_draw = 1;		
+					color = COLORS[player.color];
+					is_player_drawn = 1;		
 					break;
 				}
 			}
 
-			// drawing other objects
-			if(!is_player_draw) {
+			// other objects
+			if(!is_player_drawn) {
+				int index = (x * HEIGHT) + y;
+				ObjectType obj = game->board[index];
 
+				switch (obj) {
+					case OBJECT_EMPTY: color = COLORS[COLOR_WHITE];    break;
+					case OBJECT_WALL:  color = COLORS[COLOR_BLACK];    break;
+					case OBJECT_CHEST: color = COLORS[COLOR_BROWN];    break;
+					case OBJECT_BONUS: color = COLORS[COLOR_PURPLE];   break;
+					case OBJECT_BOMB:  color = COLORS[COLOR_DARKBLUE]; break;
+				}
 			}
-			
+
+			SDL_FRect square = {
+				.x = x * SIZE,
+				.y = y * SIZE,
+				.w = SIZE,
+				.h = SIZE
+			};
+			SDL_SetRenderDrawColor(context, color.r, color.g, color.b, color.a);
+			SDL_RenderFillRect(context, &square);
 		}
 	}
+
+	SDL_RenderPresent(context);
 }
 
 void sdl_engine_shutdown() {
-	if (window) {
-		SDL_DestroyWindow();
+	if (context) {
+		SDL_DestroyRenderContext(context);
 	}
+	if (window) {
+		SDL_DestroyWindow(window);
+	}
+
+	SDL_Quit();
 }
 

@@ -20,8 +20,9 @@ typedef enum {
 	COLOR_YELLOW,
 	COLOR_BROWN,
 	COLOR_PURPLE,
-	COLOR_DARKBLUE
+	COLOR_DARKBLUE,
 	COLOR_BLACK,
+	COLOR_WHITE
 } Color;
 // ----------------------------------
 
