@@ -98,13 +98,13 @@ void run_client() {
 
 	// main loop
 	while (running && !game_state.is_end) {
-		printf("NOWA KLATKA!\n");
+		// events listening
 		while (SDL_PollEvent(&e)) {
 			if (e.type == SDL_EVENT_QUIT) {
-				printf("Kliknięto X!\n");
 				running = 0;
 			}
 		}
+
 		sdl_engine_render(&game_state);
 		send_action(sock_fd);
 		usleep(FRAME_DURATION);

@@ -2,6 +2,7 @@
 #include "enums.h"
 #include "queue.h"
 #include "player.h"
+#include "game.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -66,6 +67,15 @@ void connect_player(Player *player, Queue *global_queue, const int server_sock_f
 	}
 	
 	printf("Player %d has connected\n", player->id);
+}
+
+void disconnect_player(Game *g, int player_id) {
+	int index = player_id - 1;
+	Player *p = g->players[index];
+	g->players[index] = NULL;
+	close(p->tdata.sock_fd);
+	pthread_join(*(p->tdata.thread), NULL);
+	delete_player(p);
 }
 
 int init_socket(int *sock_fd, const int players_count) {

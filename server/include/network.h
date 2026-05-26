@@ -5,6 +5,7 @@
 
 typedef struct Player Player;
 typedef struct Queue Queue;
+typedef struct Game Game;
 typedef struct Task {
 	int player_id;	
 	MessageType type;
@@ -12,6 +13,7 @@ typedef struct Task {
 
 void *recive_tasks(void*);
 void connect_player(Player*, Queue*, const int);
-int init_socket(int*, const int);
+void disconnect_player(Game*, int);
+int  init_socket(int*, const int);
 
 #endif

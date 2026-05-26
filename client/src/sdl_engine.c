@@ -93,25 +93,21 @@ int sdl_engine_get_direction() {
 	int pressed_keys = 0;
 
 	if (key_states[SDL_SCANCODE_W]) {
-		printf("Naciśnięto W\n");
 		vertical += 1;
 		pressed_keys++;
 	}
 
 	if (key_states[SDL_SCANCODE_S]) {
-		printf("Naciśnięto S\n");
 		vertical -= 1;
 		pressed_keys++;
 	}
 	
 	if (key_states[SDL_SCANCODE_D]) {
-		printf("Naciśnięto D\n");
 		horizontal += 1;
 		pressed_keys++;
 	}
 
 	if (key_states[SDL_SCANCODE_A]) {
-		printf("Naciśnięto A\n");
 		horizontal -= 1;
 		pressed_keys++;
 	}

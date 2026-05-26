@@ -1,5 +1,6 @@
 #include "player.h"
 #include "enums.h"
+#include "game.h"
 #include <stdlib.h>
 
 /*

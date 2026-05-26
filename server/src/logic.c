@@ -78,7 +78,7 @@ List *process_task_queue(Queue *q, Game *g) {
 
 		switch (task->type) {
 			case MSG_DISCONNECT: {
-				// TODO
+				disconnect_player(g, task->player_id);
 				free(task);
 				break;
 			}
