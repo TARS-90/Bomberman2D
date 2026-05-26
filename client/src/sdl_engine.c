@@ -60,7 +60,7 @@ void sdl_engine_render(GameState *game) {
 
 			// other objects
 			if(!is_player_drawn) {
-				int index = (x * HEIGHT) + y;
+				int index = (y * HEIGHT) + x;
 				ObjectType obj = game->board[index];
 
 				switch (obj) {
@@ -87,27 +87,31 @@ void sdl_engine_render(GameState *game) {
 }
 
 int sdl_engine_get_direction() {
-	const int *key_states = SDL_GetKeyboardState(NULL);
+	const uint8_t *key_states = (uint8_t*) SDL_GetKeyboardState(NULL);
 	int vertical = 0;
 	int horizontal = 0;
 	int pressed_keys = 0;
 
-	if (key_states[SDL_SCANCONDE_W]) {
+	if (key_states[SDL_SCANCODE_W]) {
+		printf("Naciśnięto W\n");
 		vertical += 1;
 		pressed_keys++;
 	}
 
 	if (key_states[SDL_SCANCODE_S]) {
+		printf("Naciśnięto S\n");
 		vertical -= 1;
 		pressed_keys++;
 	}
 	
 	if (key_states[SDL_SCANCODE_D]) {
+		printf("Naciśnięto D\n");
 		horizontal += 1;
 		pressed_keys++;
 	}
 
 	if (key_states[SDL_SCANCODE_A]) {
+		printf("Naciśnięto A\n");
 		horizontal -= 1;
 		pressed_keys++;
 	}

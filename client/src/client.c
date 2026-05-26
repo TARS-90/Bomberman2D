@@ -7,6 +7,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <SDL3/SDL.h>
 
 typedef struct ThreadData {
 	int *sock_fd;
@@ -44,6 +45,19 @@ int connect_to_server(int *sock_fd, struct sockaddr_in *server_addr) {
 	return 0;
 }
 
+void send_action(int sock_fd) {
+	MessageType msg = MSG_NONE;
+	switch (sdl_engine_get_direction()) {
+		case DIR_NONE:  break;
+		case DIR_UP:    msg = MSG_MOVE_UP; break;
+		case DIR_DOWN:  msg = MSG_MOVE_DOWN; break;
+		case DIR_RIGHT: msg = MSG_MOVE_RIGHT; break;
+		case DIR_LEFT:  msg = MSG_MOVE_LEFT; break;
+	}
+	if (msg != MSG_NONE) {
+		send(sock_fd, &msg, sizeof(MessageType), 0);	
+	}
+}
 
 void run_client() {
 	int sock_fd;
@@ -61,6 +75,8 @@ void run_client() {
 	// game has started
 
 	GameState game_state;
+	game_state.is_end = 0;
+
 	ThreadData thread_data = (ThreadData) {
 		.sock_fd = &sock_fd,
 		.game = &game_state
@@ -77,14 +93,25 @@ void run_client() {
 		return;
 	}
 
+	SDL_Event e;
+	int running = 1;
+
 	// main loop
-	while (!game_state.is_end) {
+	while (running && !game_state.is_end) {
+		printf("NOWA KLATKA!\n");
+		while (SDL_PollEvent(&e)) {
+			if (e.type == SDL_EVENT_QUIT) {
+				printf("Kliknięto X!\n");
+				running = 0;
+			}
+		}
 		sdl_engine_render(&game_state);
+		send_action(sock_fd);
 		usleep(FRAME_DURATION);
 	}
 
 	// releasing resources
 	sdl_engine_shutdown();
-	pthread_join(pid, NULL);
 	close(sock_fd);
+	pthread_join(pid, NULL);
 }
