@@ -86,6 +86,42 @@ void sdl_engine_render(GameState *game) {
 	SDL_RenderPresent(context);
 }
 
+int sdl_engine_get_direction() {
+	const int *key_states = SDL_GetKeyboardState(NULL);
+	int vertical = 0;
+	int horizontal = 0;
+	int pressed_keys = 0;
+
+	if (key_states[SDL_SCANCONDE_W]) {
+		vertical += 1;
+		pressed_keys++;
+	}
+
+	if (key_states[SDL_SCANCODE_S]) {
+		vertical -= 1;
+		pressed_keys++;
+	}
+	
+	if (key_states[SDL_SCANCODE_D]) {
+		horizontal += 1;
+		pressed_keys++;
+	}
+
+	if (key_states[SDL_SCANCODE_A]) {
+		horizontal -= 1;
+		pressed_keys++;
+	}
+
+	if (pressed_keys == 1) {
+		if (vertical == 1)    return DIR_UP;
+		if (vertical == -1)   return DIR_DOWN;
+		if (horizontal == 1)  return DIR_RIGHT;
+		if (horizontal == -1) return DIR_LEFT;
+	}
+	
+	return DIR_NONE;
+}
+
 void sdl_engine_shutdown() {
 	if (context) {
 		SDL_DestroyRenderer(context);

@@ -11,8 +11,9 @@
 // ----------------------------------
 
 
-// -------- PLAYER COLORS -----------
-// Each player has its own color
+// ---------- COLORS ----------------
+// Each object and player has its 
+// own color
 typedef enum {
 	COLOR_RED,
 	COLOR_BLUE,
@@ -26,6 +27,16 @@ typedef enum {
 } Color;
 // ----------------------------------
 
+
+// ---------- DIRECTIONS ------------
+// Players moving direction
+typedef enum {
+	DIR_NONE,
+	DIR_UP,
+	DIR_DOWN,
+	DIR_RIGHT,
+	DIR_LEFT
+} Direction;
 
 // ---------- OBJECTS ---------------
 // These are stored and displayed
