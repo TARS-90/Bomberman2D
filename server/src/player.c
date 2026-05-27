@@ -37,7 +37,7 @@ Player *create_player(int id) {
 	p->y = set_y(id);
 	p->health = 3;
 	p->bombs = 5;
-	p->radius = 3;
+	p->range = 3;
 	return p;
 }
 

@@ -17,7 +17,7 @@ typedef struct Player {
 	int y;
 	int health;
 	int bombs;
-	int radius;
+	int range;
 } Player;
 
 int set_x(int);
