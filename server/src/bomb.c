@@ -26,4 +26,6 @@ void place_bomb(Game *g, Player *p) {
 
 void expolode(Game *g, Bomb *b) {
 	// TODO
+	//
+	free(b);
 }

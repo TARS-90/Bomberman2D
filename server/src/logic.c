@@ -7,6 +7,8 @@
 #include "player.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
+
 
 int is_tile_empty(Game *g, int x, int y) {
 	int index = (x * HEIGHT) + y;
@@ -160,4 +162,14 @@ void do_tasks(Queue* q, Game *g) {
 	delete_list_shallow(board);
 }
 
+void process_bomb_queue(Game *g) {
+	time_t curr_time;
+	time(&curr_time);
 
+	Queue *bombs = g->bombs;
+	Bomb *b = (Bomb*) dequeue(bombs);
+	while (b != NULL && curr_time - b->placed_time >= BOMB_IGNITION_DELAY) {
+		explode(g, b);
+		b = (Bomb*) dequeue(bombs);
+	}
+}
