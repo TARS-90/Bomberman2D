@@ -101,7 +101,7 @@ void send_game_state(Game *g) {
 	for (int i = 0; i < MAX_PLAYERS; i++) {
 		Player *p = g->players[i];
 		if (p != NULL) {
-			send(p->tdata.sock_fd, &game_state, sizeof(GameState), 0);
+			send(p->tdata.sock_fd, &game_state, sizeof(GameState), MSG_NOSIGNAL);
 		}
 	}
 }
@@ -111,7 +111,7 @@ void send_start_game(Game *g) {
 	for (int i = 0; i < MAX_PLAYERS; i++) {
 		Player *p = g->players[i];
 		if (p != NULL) {
-			send(p->tdata.sock_fd, &msg, sizeof(MessageType), 0);
+			send(p->tdata.sock_fd, &msg, sizeof(MessageType), MSG_NOSIGNAL);
 		}
 	}
 }
