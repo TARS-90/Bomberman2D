@@ -11,7 +11,7 @@ typedef struct Bomb {
 	int x;
 	int y;
 	int range;
-	time_t placed;
+	time_t placed_time;
 } Bomb;
 
 void place_bomb(Game*, Player*);

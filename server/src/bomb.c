@@ -4,6 +4,8 @@
 #include "player.h"
 #include "game.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 
 void place_bomb(Game *g, Player *p) {
@@ -17,6 +19,7 @@ void place_bomb(Game *g, Player *p) {
 	bomb->x = p->x;
 	bomb->y = p->y;
 	bomb->range = p->range; // explosion range
+	time(&bomb->placed_time);
 	p->bombs--;
 
 	int index = (bomb->y * WIDTH) + bomb->x;
@@ -24,7 +27,7 @@ void place_bomb(Game *g, Player *p) {
 	enqueue(g->bombs, bomb);
 }
 
-void expolode(Game *g, Bomb *b) {
+void explode(Game *g, Bomb *b) {
 	// TODO
 	//
 	free(b);

@@ -3,6 +3,7 @@ set(SOURCES
 	src/network.c
 	src/game.c
 	src/player.c
+	src/bomb.c
 	src/server.c)
 
 add_executable(server src/main.c)

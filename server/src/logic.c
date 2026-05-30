@@ -5,6 +5,7 @@
 #include "game.h"
 #include "network.h"
 #include "player.h"
+#include "bomb.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
