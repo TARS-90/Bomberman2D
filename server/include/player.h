@@ -3,6 +3,8 @@
 
 #include <pthread.h>
 
+#define PLAYER_SPEED 150 // in miliseconds
+
 typedef struct Queue Queue;
 typedef struct ThreadData {
 	pthread_t *thread;
@@ -16,8 +18,9 @@ typedef struct Player {
 	int x;
 	int y;
 	int health;
-	int bombs;
-	int range;
+	int bombs_count;
+	int bombs_range;
+	long long last_move;	
 } Player;
 
 int set_x(int);

@@ -36,6 +36,7 @@ void run_server(const int players_count) {
 	int sock_fd;
 	if (init_socket(&sock_fd, players_count) < 0) return;
 
+	struct timespec ts;
 	Queue *queue = create_queue();
 	Game game = {
 		.players = init_players(queue, players_count, sock_fd),
@@ -53,10 +54,12 @@ void run_server(const int players_count) {
 
 	// Main game loop
 	while (!game.is_end) {
+		clock_gettime(CLOCK_MONOTONIC, &ts);
+		// getting time in miliseconds
+		long long curr_time = (long long) ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
 		send_game_state(&game);
-		if (queue->size > 0) {
-			do_tasks(queue, &game);
-		}
+		do_tasks(queue, &game, curr_time);
+		process_bomb_queue(&game, curr_time);
 		usleep(FRAME_DURATION);
 	}
 

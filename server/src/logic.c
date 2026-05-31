@@ -69,7 +69,7 @@ List *board_as_list() {
 	return board; 
 }
 
-List *process_task_queue(Queue *q, Game *g) {
+List *process_task_queue(Queue *q, Game *g, const long long time) {
 	List *results = board_as_list();	
 
 	while (q->size) {
@@ -119,42 +119,46 @@ List *process_task_queue(Queue *q, Game *g) {
 	return results;
 }
 
-void execute_task(Game *g, Task *t) {
+void execute_task(Game *g, Task *t, const long long time) {
 	int player_index = t->player_id - 1;
 	Player *p = g->players[player_index];
 
 	switch (t->type) {
 		case MSG_MOVE_UP: {
 			p->y--;
+			p->last_move = time;
 			break;
 		}
 		case MSG_MOVE_DOWN: {
 			p->y++;
+			p->last_move = time;
 			break;
 		}
 		case MSG_MOVE_RIGHT: {
 			p->x++;
+			p->last_move = time;
 			break;
 		}
 		case MSG_MOVE_LEFT: {
 			p->x--;
+			p->last_move = time;
 			break;
 		}
 		case MSG_PLACE_BOMB: {
-			place_bomb(g, p);
+			place_bomb(g, p, time);
 			break;
 		}
 	}
 }
 
-void do_tasks(Queue* q, Game *g) {
+void do_tasks(Queue* q, Game *g, const long long time) {
 	List *board = process_task_queue(q, g);
 	for (int i = 0; i < WIDTH*HEIGHT; i++) {
 		List *tasks = (List*) get_at(board, i);
 		if (tasks->size > 0) {
 			int rnd = rand() % tasks->size;
 			Task *task = (Task*) get_at(tasks, rnd);
-			execute_task(g, task);
+			execute_task(g, task, time);
 		}
 		delete_list_deep(tasks);
 	}
@@ -163,14 +167,16 @@ void do_tasks(Queue* q, Game *g) {
 	delete_list_shallow(board);
 }
 
-void process_bomb_queue(Game *g) {
-	time_t curr_time;
-	time(&curr_time);
+void process_bomb_queue(Game *g, const long long time) {
+	while (g->bombs->size > 0) {
+		Bomb *first_bomb = (Bomb*) g->bombs->front->value;
+		if (time - first_bomb->placed_time < BOMB_IGNITION_DELAY) {
+			break;
+		}
 
-	Queue *bombs = g->bombs;
-	Bomb *b = (Bomb*) dequeue(bombs);
-	while (b != NULL && curr_time - b->placed_time >= BOMB_IGNITION_DELAY) {
-		explode(g, b);
-		b = (Bomb*) dequeue(bombs);
+		Bomb *bomb_to_explode = (Bomb*) dequeue(g->bombs);
+		if (bomb_to_explode != NULL) {
+			explode(g, bomb_to_explode);
+		}
 	}
 }
