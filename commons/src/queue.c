@@ -1,11 +1,7 @@
 #include "queue.h"
 #include <stdlib.h>
 
-struct Node {
-	void *value;
-	struct Node *next;
-	struct Node *prev;
-};
+
 
 Queue *create_queue() {
 	Queue *q = malloc(sizeof(Queue));

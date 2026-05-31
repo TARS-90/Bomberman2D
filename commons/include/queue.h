@@ -5,14 +5,18 @@
 #include <pthread.h>
 
 typedef struct Node Node;
-typedef struct Queue Queue;
+struct Node {
+	void *value;
+	struct Node *next;
+	struct Node *prev;
+};
 
-struct Queue {
+typedef struct Queue {
 	Node *front;
 	Node *rear;
 	size_t size;
 	pthread_mutex_t mutex;
-};
+} Queue;
 
 Queue *create_queue();
 void delete_queue_deep(Queue*);
