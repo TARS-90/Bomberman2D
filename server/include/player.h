@@ -20,7 +20,7 @@ typedef struct Player {
 	int health;
 	int bombs_count;
 	int bombs_range;
-	long long last_move;	
+	long long last_move;
 } Player;
 
 int set_x(int);

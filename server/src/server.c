@@ -6,6 +6,7 @@
 #include "game.h"
 #include "queue.h"
 #include "list.h"
+#include "bomb.h"
 #include <unistd.h>
 #include <sys/socket.h>
 #include <stdlib.h>
@@ -37,6 +38,7 @@ void run_server(const int players_count) {
 	if (init_socket(&sock_fd, players_count) < 0) return;
 
 	struct timespec ts;
+	long long last_add_bomb_time = 0;
 	Queue *queue = create_queue();
 	Game game = {
 		.players = init_players(queue, players_count, sock_fd),
@@ -45,12 +47,10 @@ void run_server(const int players_count) {
 		.is_end = 0
 	};
 
+	
+
 	// sending protocol to each player to start game
 	send_start_game(&game);
-
-	// setting delay to make sure every player
-	// will connect without issues
-//	sleep(1);
 
 	// Main game loop
 	while (!game.is_end) {
@@ -60,6 +60,7 @@ void run_server(const int players_count) {
 		send_game_state(&game);
 		do_tasks(queue, &game, curr_time);
 		process_bomb_queue(&game, curr_time);
+		add_bombs_to_players(&game, &last_add_bomb_time, curr_time);
 		usleep(FRAME_DURATION);
 	}
 
@@ -118,5 +119,17 @@ void send_start_game(Game *g) {
 		if (p != NULL) {
 			send(p->tdata.sock_fd, &msg, sizeof(MessageType), MSG_NOSIGNAL);
 		}
+	}
+}
+
+void add_bombs_to_players(Game *g, long long *last_add_time, const long long curr_time) {
+	if (curr_time - *last_add_time >= BOMB_COOLDOWN)	{
+		for (int i = 0; i < MAX_PLAYERS; i++) {
+			Player *p = g->players[i];
+			if (p != NULL && p->bombs_count < 5) {
+				p->bombs_count++;	
+			}
+		}
+		*last_add_time = curr_time;
 	}
 }

@@ -18,7 +18,7 @@ void place_bomb(Game *g, Player *p, const long long time) {
 	// current player position is new bomb position
 	bomb->x = p->x;
 	bomb->y = p->y;
-	bomb->bombs_range = p->range; // explosion range
+	bomb->range = p->bombs_range; // explosion range
 	bomb->placed_time = time;
 	p->bombs_count--;
 
@@ -29,6 +29,8 @@ void place_bomb(Game *g, Player *p, const long long time) {
 
 void explode(Game *g, Bomb *b) {
 	// TODO
-	//
+	
+	int index = (b->y * HEIGHT) + b->x;
+	g->board[index] = OBJECT_EMPTY;
 	free(b);
 }
