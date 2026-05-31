@@ -12,12 +12,12 @@
 
 
 int is_tile_empty(Game *g, int x, int y) {
-	int index = (x * HEIGHT) + y;
+	int index = (y * HEIGHT) + x;
 	return g->board[index] == OBJECT_EMPTY;
 }
 
 int is_tile_bonus(Game *g, int x, int y) {
-	int index = (x * HEIGHT) + y;
+	int index = (y * HEIGHT) + x;
 	return g->board[index] == OBJECT_BONUS;
 }
 
@@ -87,7 +87,7 @@ List *process_task_queue(Queue *q, Game *g) {
 			}
 			case MSG_PLACE_BOMB: {
 				if (is_tile_empty(g, x, y)) {
-					int index = (x * HEIGHT) + y;
+					int index = (y * HEIGHT) + x;
 					List *tasks_list = (List*) get_at(results, index);
 					insert(tasks_list, task);
 				}
@@ -105,7 +105,7 @@ List *process_task_queue(Queue *q, Game *g) {
 				y += ((task->type == MSG_MOVE_DOWN) ? 1 : 0);
 				y -= ((task->type == MSG_MOVE_UP) ? 1 : 0);
 				if (check_move(g, x, y)) {
-					int index = (x * HEIGHT) + y;
+					int index = (y * HEIGHT) + x;
 					List *tasks_list = (List*) get_at(results, index);
 					insert(tasks_list, task);
 				}

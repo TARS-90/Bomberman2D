@@ -7,7 +7,7 @@ int *create_board() {
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			int index = (x * HEIGHT) + y;
+			int index = (y * HEIGHT) + x;
 			if (y % 2 && x % 2) 
 				board[index] = OBJECT_WALL;
 			else board[index] = OBJECT_EMPTY;

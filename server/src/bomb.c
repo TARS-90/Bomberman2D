@@ -22,7 +22,7 @@ void place_bomb(Game *g, Player *p) {
 	time(&bomb->placed_time);
 	p->bombs--;
 
-	int index = (bomb->y * WIDTH) + bomb->x;
+	int index = (bomb->y * HEIGHT) + bomb->x;
 	g->board[index] = OBJECT_BOMB;
 	enqueue(g->bombs, bomb);
 }
