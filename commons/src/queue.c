@@ -73,7 +73,11 @@ void *dequeue(Queue *q) {
 	// locking mutex before reading and writting 
 	pthread_mutex_lock(&(q->mutex));
 
-	if (q->size == 0) return NULL;
+	if (q->size == 0) {
+		// unlocking
+		pthread_mutex_unlock(&(q->mutex));
+		return NULL;
+	}
 
 	Node *tmp = q->front;
 	void *value = tmp->value;
