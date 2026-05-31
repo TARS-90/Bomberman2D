@@ -28,15 +28,16 @@ typedef enum {
 // ----------------------------------
 
 
-// ---------- DIRECTIONS ------------
-// Players moving direction
+// ---------- ACTIONS ---------------
+// Players possible actions to make 
 typedef enum {
-	DIR_NONE,
+	NONE,
 	DIR_UP,
 	DIR_DOWN,
 	DIR_RIGHT,
-	DIR_LEFT
-} Direction;
+	DIR_LEFT,
+	PLACE_BOMB
+} Action;
 
 // ---------- OBJECTS ---------------
 // These are stored and displayed

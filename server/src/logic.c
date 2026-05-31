@@ -141,7 +141,7 @@ void execute_task(Game *g, Task *t) {
 			break;
 		}
 		case MSG_PLACE_BOMB: {
-			// TODO
+			place_bomb(g, p);
 			break;
 		}
 	}

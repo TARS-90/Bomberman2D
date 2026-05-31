@@ -12,7 +12,7 @@ typedef struct GameState GameState;
 int  sdl_engine_init(void);
 void sdl_engine_render(GameState*);
 void sdl_engine_poll_event();
-int  sdl_engine_get_direction();
+int  sdl_engine_get_action();
 void sdl_engine_shutdown();
 
 #endif

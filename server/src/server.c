@@ -39,6 +39,7 @@ void run_server(const int players_count) {
 	Queue *queue = create_queue();
 	Game game = {
 		.players = init_players(queue, players_count, sock_fd),
+		.bombs = create_queue(),
 		.board = create_board(),
 		.is_end = 0
 	};
@@ -67,6 +68,7 @@ void run_server(const int players_count) {
 	}
 	free(game.players);
 	free(game.board);
+	delete_queue_deep(game.bombs);
 	delete_queue_deep(queue);
 }
 

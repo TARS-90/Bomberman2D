@@ -86,11 +86,16 @@ void sdl_engine_render(GameState *game) {
 	SDL_RenderPresent(context);
 }
 
-int sdl_engine_get_direction() {
+int sdl_engine_get_action() {
 	const uint8_t *key_states = (uint8_t*) SDL_GetKeyboardState(NULL);
 	int vertical = 0;
 	int horizontal = 0;
 	int pressed_keys = 0;
+
+	// placing bomb has higher priority than moving
+	if (key_states[SDL_SCANCODE_SPACE]) {
+		return PLACE_BOMB;
+	}
 
 	if (key_states[SDL_SCANCODE_W]) {
 		vertical += 1;
@@ -119,7 +124,7 @@ int sdl_engine_get_direction() {
 		if (horizontal == -1) return DIR_LEFT;
 	}
 	
-	return DIR_NONE;
+	return NONE;
 }
 
 void sdl_engine_shutdown() {

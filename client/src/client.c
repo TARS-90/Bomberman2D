@@ -47,12 +47,14 @@ int connect_to_server(int *sock_fd, struct sockaddr_in *server_addr) {
 
 void send_action(int sock_fd) {
 	MessageType msg = MSG_NONE;
-	switch (sdl_engine_get_direction()) {
-		case DIR_NONE:  break;
-		case DIR_UP:    msg = MSG_MOVE_UP; break;
-		case DIR_DOWN:  msg = MSG_MOVE_DOWN; break;
-		case DIR_RIGHT: msg = MSG_MOVE_RIGHT; break;
-		case DIR_LEFT:  msg = MSG_MOVE_LEFT; break;
+	// listening actions 
+	switch (sdl_engine_get_action()) {
+		case NONE:	 break;
+		case DIR_UP:     msg = MSG_MOVE_UP; break;
+		case DIR_DOWN:   msg = MSG_MOVE_DOWN; break;
+		case DIR_RIGHT:  msg = MSG_MOVE_RIGHT; break;
+		case DIR_LEFT:   msg = MSG_MOVE_LEFT; break;
+		case PLACE_BOMB: msg = MSG_PLACE_BOMB; break;
 	}
 	if (msg != MSG_NONE) {
 		send(sock_fd, &msg, sizeof(MessageType), 0);	
