@@ -87,6 +87,10 @@ List *process_task_queue(Queue *q, Game *g, const long long time) {
 		int y = player->y;
 
 		switch (task->type) {
+			case MSG_NONE: {
+				free(task);
+				break;
+			}
 			case MSG_DISCONNECT: {
 				disconnect_player(g, task->player_id);
 				free(task);
@@ -255,13 +259,28 @@ void players_in_explosion_range(Game *g, Bomb* b) {
 		}
 	}
 
+	List *players_to_kill = create_list();
 	for (int i = 0; i < players->size; i++) {
 		Player *p = (Player*) get_at(players, i);
 		p->health--;
 		if (p->health == 0) {
-			close(p->tdata.sock_fd);
+			insert(players_to_kill, p);
 		}
 	}
 
+	// if there is a situation when all alive players are going to die in the same time
+	// the winner is randomized
+	if (g->alive_players_count == players_to_kill->size) {
+		int n = players_to_kill->size - 1;
+		int rnd = rand() % n;
+		remove_at(players_to_kill, rnd);
+	}
+
+	for (int i = 0; i < players_to_kill->size; i++) {
+		Player *p = (Player*) get_at(players_to_kill, i);
+		close(p->tdata.sock_fd);
+	}
+
+	delete_list_shallow(players_to_kill);
 	delete_list_shallow(players);
 }

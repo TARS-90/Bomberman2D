@@ -44,6 +44,7 @@ void run_server(const int players_count) {
 		.players = init_players(queue, players_count, sock_fd),
 		.bombs = create_queue(),
 		.board = create_board(),
+		.alive_players_count = players_count,
 		.is_end = 0
 	};
 

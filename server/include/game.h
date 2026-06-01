@@ -9,6 +9,7 @@ typedef struct Game {
 	Player **players;
 	Queue *bombs;
 	int *board;
+	int alive_players_count;
 	int is_end;
 } Game;
 
