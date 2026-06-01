@@ -48,7 +48,6 @@ void run_server(const int players_count) {
 	};
 
 	
-
 	// sending protocol to each player to start game
 	send_start_game(&game);
 
@@ -57,6 +56,7 @@ void run_server(const int players_count) {
 		clock_gettime(CLOCK_MONOTONIC, &ts);
 		// getting time in miliseconds
 		long long curr_time = (long long) ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+
 		send_game_state(&game);
 		do_tasks(queue, &game, curr_time);
 		process_bomb_queue(&game, curr_time);

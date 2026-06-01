@@ -8,6 +8,7 @@
 #include "bomb.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 
 int is_tile_empty(Game *g, int x, int y) {
@@ -75,6 +76,12 @@ List *process_task_queue(Queue *q, Game *g, const long long time) {
 		Task *task = (Task*) dequeue(q);
 		int player_index = task->player_id - 1;
 		Player *player = g->players[player_index];
+		// skiping dead player tasks
+		if (!player) {
+			free(task);
+			continue;
+		}
+
 		// player position
 		int x = player->x;
 		int y = player->y;
@@ -183,7 +190,7 @@ void process_bomb_queue(Game *g, const long long time) {
 }
 
 int is_player_in_range(Game *g, Player *p, Bomb *b) {
-	if (p->x == b->x && p->y == b->u) return 1;
+	if (p->x == b->x && p->y == b->y) return 1;
 
 	// checking UP zone
 	for (int i = 1; i <= b->range; i++) {
@@ -232,11 +239,11 @@ int is_player_in_range(Game *g, Player *p, Bomb *b) {
 	return 0; // false
 }
 
-List *get_players_in_explosion_range(Game *g, Bomb* b) {
+void players_in_explosion_range(Game *g, Bomb* b) {
 	List *players = create_list();
 	if (!players) {
 		perror("Malloc for list (players in explosion radius) failed!\n");
-		return NULL;
+		return;
 	}
 
 	for (int i = 0; i < MAX_PLAYERS; i++) {
@@ -246,8 +253,15 @@ List *get_players_in_explosion_range(Game *g, Bomb* b) {
 		if (is_player_in_range(g, p, b)) {
 			insert(players, (void*) p);
 		}
-		
 	}
+
+	for (int i = 0; i < players->size; i++) {
+		Player *p = (Player*) get_at(players, i);
+		p->health--;
+		if (p->health == 0) {
+			close(p->tdata.sock_fd);
+		}
+	}
+
+	delete_list_shallow(players);
 }
-
-

@@ -1,6 +1,8 @@
 #ifndef LOGIC_H
 #define LOGIC_H
 
+typedef struct Player Player;
+typedef struct Bomb Bomb;
 typedef struct Game Game;
 typedef struct List List;
 typedef struct Queue Queue;
@@ -14,5 +16,7 @@ List *process_task_queue(Queue*, Game*, const long long);
 void execute_task(Game*, Task*, const long long);
 void do_tasks(Queue*, Game*, const long long);
 void process_bomb_queue(Game*, const long long);
+int is_player_in_range(Game*, Player*, Bomb*);
+void players_in_explosion_range(Game*, Bomb*);
 
 #endif

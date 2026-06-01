@@ -56,9 +56,7 @@ void send_action(int sock_fd) {
 		case DIR_LEFT:   msg = MSG_MOVE_LEFT; break;
 		case PLACE_BOMB: msg = MSG_PLACE_BOMB; break;
 	}
-	if (msg != MSG_NONE) {
-		send(sock_fd, &msg, sizeof(MessageType), 0);	
-	}
+	send(sock_fd, &msg, sizeof(MessageType), 0);	
 }
 
 void run_client() {

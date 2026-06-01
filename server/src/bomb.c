@@ -3,6 +3,7 @@
 #include "queue.h"
 #include "player.h"
 #include "game.h"
+#include "logic.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -29,7 +30,8 @@ void place_bomb(Game *g, Player *p, const long long time) {
 
 void explode(Game *g, Bomb *b) {
 	// TODO
-	
+	players_in_explosion_range(g, b);
+
 	int index = (b->y * HEIGHT) + b->x;
 	g->board[index] = OBJECT_EMPTY;
 	free(b);
