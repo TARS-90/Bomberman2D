@@ -119,14 +119,19 @@ void send_start_game(Game *g) {
 	}
 }
 
-void add_bombs_to_players(Game *g, long long *last_add_time, const long long curr_time) {
-	if (curr_time - *last_add_time >= BOMB_COOLDOWN)	{
-		for (int i = 0; i < MAX_PLAYERS; i++) {
-			Player *p = g->players[i];
-			if (p != NULL && p->bombs_count < 5) {
-				p->bombs_count++;	
-			}
+void change_players_states(Game *g) {
+	for (int i = 0; i < MAX_PLAYERS; i++) {
+		Player *p = g->players[i];
+
+		// making players touchable if their hit delay has come
+		if (p != NULL && p->is_untouchable && (g->curr_time - p->last_hit) >= PLAYER_HIT_DELAY) {
+			p->is_untouchable = 0;
 		}
-		*last_add_time = curr_time;
+
+		// adding bombs to player equipment 
+		if (p != NULL && p->bombs_count < 5 && (g->curr_time - p->last_bomb_add) >= BOMB_COOLDOWN) {
+			p->last_bomb_add = g->curr_time;
+			p->bombs_count++;	
+		}
 	}
 }
