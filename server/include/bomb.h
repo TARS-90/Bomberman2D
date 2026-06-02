@@ -13,7 +13,7 @@ typedef struct Bomb {
 	long long placed_time;
 } Bomb;
 
-void place_bomb(Game*, Player*, const long long);
+void place_bomb(Game*, Player*);
 void explode(Game*, Bomb*);
 
 #endif

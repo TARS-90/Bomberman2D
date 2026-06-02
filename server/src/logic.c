@@ -9,7 +9,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <time.h>
 
+
+long long get_current_time() {
+	struct timespec ts;
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+	return (long long) ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+}
 
 int is_tile_empty(Game *g, int x, int y) {
 	int index = (y * HEIGHT) + x;
@@ -69,7 +76,7 @@ List *board_as_list() {
 	return board; 
 }
 
-List *process_task_queue(Queue *q, Game *g, const long long time) {
+List *process_task_queue(Queue *q, Game *g) {
 	List *results = board_as_list();	
 
 	while (q->size) {
@@ -111,7 +118,7 @@ List *process_task_queue(Queue *q, Game *g, const long long time) {
 			default: {
 				// if task is about moving, then there is computing
 				// wanted destination
-				int delay = (int) time - player->last_move;
+				int delay = (int) g->curr_time - player->last_move;
 				x += ((task->type == MSG_MOVE_RIGHT) ? 1 : 0);
 				x -= ((task->type == MSG_MOVE_LEFT) ? 1 : 0);
 				y += ((task->type == MSG_MOVE_DOWN) ? 1 : 0);
@@ -131,46 +138,46 @@ List *process_task_queue(Queue *q, Game *g, const long long time) {
 	return results;
 }
 
-void execute_task(Game *g, Task *t, const long long time) {
+void execute_task(Game *g, Task *t) {
 	int player_index = t->player_id - 1;
 	Player *p = g->players[player_index];
 
 	switch (t->type) {
 		case MSG_MOVE_UP: {
 			p->y--;
-			p->last_move = time;
+			p->last_move = g->curr_time;
 			break;
 		}
 		case MSG_MOVE_DOWN: {
 			p->y++;
-			p->last_move = time;
+			p->last_move = g->curr_time;
 			break;
 		}
 		case MSG_MOVE_RIGHT: {
 			p->x++;
-			p->last_move = time;
+			p->last_move = g->curr_time;
 			break;
 		}
 		case MSG_MOVE_LEFT: {
 			p->x--;
-			p->last_move = time;
+			p->last_move = g->curr_time;
 			break;
 		}
 		case MSG_PLACE_BOMB: {
-			place_bomb(g, p, time);
+			place_bomb(g, p);
 			break;
 		}
 	}
 }
 
-void do_tasks(Queue* q, Game *g, const long long time) {
-	List *board = process_task_queue(q, g, time);
+void do_tasks(Queue* q, Game *g) {
+	List *board = process_task_queue(q, g);
 	for (int i = 0; i < WIDTH*HEIGHT; i++) {
 		List *tasks = (List*) get_at(board, i);
 		if (tasks->size > 0) {
 			int rnd = rand() % tasks->size;
 			Task *task = (Task*) get_at(tasks, rnd);
-			execute_task(g, task, time);
+			execute_task(g, task);
 		}
 		delete_list_deep(tasks);
 	}
@@ -179,10 +186,10 @@ void do_tasks(Queue* q, Game *g, const long long time) {
 	delete_list_shallow(board);
 }
 
-void process_bomb_queue(Game *g, const long long time) {
+void process_bomb_queue(Game *g) {
 	while (g->bombs->size > 0) {
 		Bomb *first_bomb = (Bomb*) g->bombs->front->value;
-		if (time - first_bomb->placed_time < BOMB_IGNITION_DELAY) {
+		if (g->curr_time - first_bomb->placed_time < BOMB_IGNITION_DELAY) {
 			break;
 		}
 
@@ -254,7 +261,7 @@ void players_in_explosion_range(Game *g, Bomb* b) {
 		Player *p = g->players[i];
 		if (!p) continue;
 
-		if (is_player_in_range(g, p, b)) {
+		if (!p->is_untouchable && is_player_in_range(g, p, b)) {
 			insert(players, (void*) p);
 		}
 	}
@@ -262,6 +269,8 @@ void players_in_explosion_range(Game *g, Bomb* b) {
 	List *players_to_kill = create_list();
 	for (int i = 0; i < players->size; i++) {
 		Player *p = (Player*) get_at(players, i);
+		p->last_hit = g->curr_time;
+		p->is_untouchable = 1;
 		p->health--;
 		if (p->health == 0) {
 			insert(players_to_kill, p);
@@ -279,6 +288,7 @@ void players_in_explosion_range(Game *g, Bomb* b) {
 	for (int i = 0; i < players_to_kill->size; i++) {
 		Player *p = (Player*) get_at(players_to_kill, i);
 		close(p->tdata.sock_fd);
+		g->alive_players_count--;
 	}
 
 	delete_list_shallow(players_to_kill);

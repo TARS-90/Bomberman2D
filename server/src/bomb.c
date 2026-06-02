@@ -9,7 +9,7 @@
 #include <time.h>
 
 
-void place_bomb(Game *g, Player *p, const long long time) {
+void place_bomb(Game *g, Player *p) {
 	Bomb *bomb = malloc(sizeof(Bomb));
 	if (!bomb) {
 		perror("Malloc for bomb failed!\n");
@@ -20,7 +20,7 @@ void place_bomb(Game *g, Player *p, const long long time) {
 	bomb->x = p->x;
 	bomb->y = p->y;
 	bomb->range = p->bombs_range; // explosion range
-	bomb->placed_time = time;
+	bomb->placed_time = g->curr_time;
 	p->bombs_count--;
 
 	int index = (bomb->y * HEIGHT) + bomb->x;

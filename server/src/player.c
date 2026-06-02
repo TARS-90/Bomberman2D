@@ -36,9 +36,12 @@ Player *create_player(int id) {
 	p->x = set_x(id);
 	p->y = set_y(id);
 	p->health = 3;
+	p->is_untouchable = 0;
 	p->bombs_count = 5;
 	p->bombs_range = 3;
 	p->last_move = 0;
+	p->last_hit = 0;
+	p->last_bomb_add = 0;
 	return p;
 }
 

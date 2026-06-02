@@ -11,6 +11,7 @@ typedef struct Game {
 	int *board;
 	int alive_players_count;
 	int is_end;
+	long long curr_time;
 } Game;
 
 int *create_board();
