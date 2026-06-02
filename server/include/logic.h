@@ -19,5 +19,6 @@ void do_tasks(Queue*, Game*);
 void process_bomb_queue(Game*);
 int is_player_in_range(Game*, Player*, Bomb*);
 void players_in_explosion_range(Game*, Bomb*);
+void change_players_states(Game*);
 
 #endif

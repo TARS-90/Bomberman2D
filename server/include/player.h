@@ -4,7 +4,7 @@
 #include <pthread.h>
 
 #define PLAYER_SPEED	 150 // in miliseconds
-#define PLAYER_HIT_DELAY 800
+#define PLAYER_HIT_DELAY 1500
 
 typedef struct Queue Queue;
 typedef struct ThreadData {

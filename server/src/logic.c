@@ -294,3 +294,20 @@ void players_in_explosion_range(Game *g, Bomb* b) {
 	delete_list_shallow(players_to_kill);
 	delete_list_shallow(players);
 }
+
+void change_players_states(Game *g) {
+	for (int i = 0; i < MAX_PLAYERS; i++) {
+		Player *p = g->players[i];
+
+		// making players touchable if their hit delay has come
+		if (p != NULL && (g->curr_time - p->last_hit) >= PLAYER_HIT_DELAY) {
+			p->is_untouchable = 0;
+		}
+
+		// adding bombs to player equipment 
+		if (p != NULL && p->bombs_count < 5 && (g->curr_time - p->last_bomb_add) >= BOMB_COOLDOWN) {
+			p->last_bomb_add = g->curr_time;
+			p->bombs_count++;	
+		}
+	}
+}

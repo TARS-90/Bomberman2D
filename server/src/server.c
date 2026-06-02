@@ -58,6 +58,7 @@ void run_server(const int players_count) {
 		do_tasks(queue, &game);
 		process_bomb_queue(&game);
 		//add_bombs_to_players(&game, &last_add_bomb_time, curr_time);
+		change_players_states(&game);
 		usleep(FRAME_DURATION);
 	}
 
@@ -115,23 +116,6 @@ void send_start_game(Game *g) {
 		Player *p = g->players[i];
 		if (p != NULL) {
 			send(p->tdata.sock_fd, &msg, sizeof(MessageType), MSG_NOSIGNAL);
-		}
-	}
-}
-
-void change_players_states(Game *g) {
-	for (int i = 0; i < MAX_PLAYERS; i++) {
-		Player *p = g->players[i];
-
-		// making players touchable if their hit delay has come
-		if (p != NULL && p->is_untouchable && (g->curr_time - p->last_hit) >= PLAYER_HIT_DELAY) {
-			p->is_untouchable = 0;
-		}
-
-		// adding bombs to player equipment 
-		if (p != NULL && p->bombs_count < 5 && (g->curr_time - p->last_bomb_add) >= BOMB_COOLDOWN) {
-			p->last_bomb_add = g->curr_time;
-			p->bombs_count++;	
 		}
 	}
 }

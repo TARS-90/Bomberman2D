@@ -12,6 +12,5 @@ void send_game_state(Game*);
 void send_start_game(Game*);
 void copy_players(GameState*, Game*);
 void copy_game_board(GameState*, Game*);
-void change_players_states(Game*);
 
 #endif 
