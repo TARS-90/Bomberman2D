@@ -47,7 +47,8 @@ typedef enum {
 	OBJECT_WALL,
 	OBJECT_CHEST,
 	OBJECT_BOMB,
-	OBJECT_BONUS
+	OBJECT_BONUS,
+	OBJECT_BLAST
 } ObjectType;
 // ----------------------------------
 

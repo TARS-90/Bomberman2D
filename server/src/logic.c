@@ -200,80 +200,22 @@ void process_bomb_queue(Game *g) {
 	}
 }
 
-int is_player_in_range(Game *g, Player *p, Bomb *b) {
-	if (p->x == b->x && p->y == b->y) return 1;
-
-	// checking UP zone
-	for (int i = 1; i <= b->range; i++) {
-		int check_y = b->y - i;
-		if (check_y < 0) break;
-
-		int index = (check_y * WIDTH) + b->x;
-		if (g->board[index] != OBJECT_EMPTY) break;
-
-		if (p->x == b->x && p->y == check_y) return 1;
-	}
-
-	// checking DOWN zone
-	for (int i = 1; i <= b->range; i++) {
-		int check_y = b->y + i;
-		if (check_y < 0) break;
-
-		int index = (check_y * WIDTH) + b->x;
-		if (g->board[index] != OBJECT_EMPTY) break;
-
-		if (p->x == b->x && p->y == check_y) return 1;
-	}
-	
-	// checking LEFT zone
-	for (int i = 1; i <= b->range; i++) {
-		int check_x = b->x - i;
-		if (check_x < 0) break;
-
-		int index = (b->y * WIDTH) + check_x;
-		if (g->board[index] != OBJECT_EMPTY) break;
-
-		if (p->x == check_x && p->y == b->y) return 1;
-	}
-
-	// checking RIGHT zone
-	for (int i = 1; i <= b->range; i++) {
-		int check_x = b->x + i;
-		if (check_x < 0) break;
-
-		int index = (b->y * WIDTH) + check_x;
-		if (g->board[index] != OBJECT_EMPTY) break;
-
-		if (p->x == check_x && p->y == b->y) return 1;
-	}
-
-	return 0; // false
-}
-
-void players_in_explosion_range(Game *g, Bomb* b) {
-	List *players = create_list();
-	if (!players) {
-		perror("Malloc for list (players in explosion radius) failed!\n");
-		return;
-	}
+void hit_players_in_explosion_range(Game *g) {
+	List *players_to_kill = create_list();
 
 	for (int i = 0; i < MAX_PLAYERS; i++) {
 		Player *p = g->players[i];
-		if (!p) continue;
-
-		if (!p->is_untouchable && is_player_in_range(g, p, b)) {
-			insert(players, (void*) p);
-		}
-	}
-
-	List *players_to_kill = create_list();
-	for (int i = 0; i < players->size; i++) {
-		Player *p = (Player*) get_at(players, i);
-		p->last_hit = g->curr_time;
-		p->is_untouchable = 1;
-		p->health--;
-		if (p->health == 0) {
-			insert(players_to_kill, p);
+		if (p != NULL) {
+			int index = (p->y * HEIGHT) + p->x;
+			Tile tile = g->board[index];
+			if (!p->is_untouchable && tile.type == OBJECT_BLAST) {
+				p->is_untouchable = 1;
+				p->last_hit = g->curr_time;
+				p->health--;
+				if (p->health <= 0) {
+					insert(players_to_kill, p);
+				}
+			}
 		}
 	}
 
@@ -285,6 +227,8 @@ void players_in_explosion_range(Game *g, Bomb* b) {
 		remove_at(players_to_kill, rnd);
 	}
 
+
+	// kill players that have 0 or less health
 	for (int i = 0; i < players_to_kill->size; i++) {
 		Player *p = (Player*) get_at(players_to_kill, i);
 		close(p->tdata.sock_fd);
@@ -292,10 +236,10 @@ void players_in_explosion_range(Game *g, Bomb* b) {
 	}
 
 	delete_list_shallow(players_to_kill);
-	delete_list_shallow(players);
 }
 
-void change_players_states(Game *g) {
+void update_all_states(Game *g) {
+	// Players
 	for (int i = 0; i < MAX_PLAYERS; i++) {
 		Player *p = g->players[i];
 
@@ -308,6 +252,20 @@ void change_players_states(Game *g) {
 		if (p != NULL && p->bombs_count < 5 && (g->curr_time - p->last_bomb_add) >= BOMB_COOLDOWN) {
 			p->last_bomb_add = g->curr_time;
 			p->bombs_count++;	
+		}
+	}
+
+	// Board 
+	for (int i = 0; i < WIDTH * HEIGHT; i++) {
+		switch (g->board[i].type) {
+			case OBJECT_BLAST: {
+				Blast *b = (Blast*) g->board[i].obj_addr;
+				if (g->curr_time - b->placed_time >= BLAST_DELAY) {
+					g->board[i].type = OBJECT_EMPTY;
+					g->board[i].obj_addr = NULL;
+					free(b);
+				}
+			}
 		}
 	}
 }

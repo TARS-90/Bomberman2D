@@ -14,6 +14,7 @@
 #include <time.h>
 #include <pthread.h>
 
+
 Player **init_players(Queue *global_queue, const int n, const int server_sock_fd) {
 	Player **players = malloc(sizeof(Player*) * MAX_PLAYERS);
 
@@ -58,7 +59,7 @@ void run_server(const int players_count) {
 		do_tasks(queue, &game);
 		process_bomb_queue(&game);
 		//add_bombs_to_players(&game, &last_add_bomb_time, curr_time);
-		change_players_states(&game);
+		update_all_states(&game);
 		usleep(FRAME_DURATION);
 	}
 

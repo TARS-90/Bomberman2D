@@ -27,7 +27,7 @@ void *receive_tasks(void *arg) {
 			printf("Lost connection with player %d\n", player->id);
 			break;
 		}
-		
+
 		task->player_id = player->id;
 		task->type = buffer;
 		enqueue(data.queue, task);

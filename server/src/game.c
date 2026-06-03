@@ -21,5 +21,3 @@ void delete_game(Game *game) {
 	free(game->board);
 	free(game);
 }
-
-

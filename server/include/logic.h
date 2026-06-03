@@ -17,8 +17,7 @@ List *process_task_queue(Queue*, Game*);
 void execute_task(Game*, Task*);
 void do_tasks(Queue*, Game*);
 void process_bomb_queue(Game*);
-int is_player_in_range(Game*, Player*, Bomb*);
-void players_in_explosion_range(Game*, Bomb*);
-void change_players_states(Game*);
+void hit_players_in_explosion_range(Game*);
+void update_all_states(Game*);
 
 #endif

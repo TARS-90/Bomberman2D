@@ -5,16 +5,20 @@
 
 typedef struct Queue Queue;
 typedef struct Player Player;
+typedef struct Tile {
+	int type;
+	void *obj_addr;
+} Tile;
 typedef struct Game {
 	Player **players;
 	Queue *bombs;
-	int *board;
+	Tile *board;
 	int alive_players_count;
 	int is_end;
 	long long curr_time;
 } Game;
 
-int *create_board();
+Tile *create_board();
 void delete_game(Game*);
 
 #endif
