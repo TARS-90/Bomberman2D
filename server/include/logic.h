@@ -10,6 +10,7 @@ typedef struct Task Task;
 
 long long get_current_time();
 int is_tile_empty(Game*, int, int);
+int is_tile_blast(Game*, int, int);
 int is_tile_bonus(Game*, int, int);
 int check_move(Game*, int, int);
 List *board_as_list();

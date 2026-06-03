@@ -36,7 +36,6 @@ void explode(Game *g, Bomb *b) {
 	g->board[index].obj_addr = NULL;
 
 	make_blast(g, b);
-	hit_players_in_explosion_range(g);
 	free(b);
 }
 

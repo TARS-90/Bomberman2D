@@ -58,7 +58,7 @@ void run_server(const int players_count) {
 		send_game_state(&game);
 		do_tasks(queue, &game);
 		process_bomb_queue(&game);
-		//add_bombs_to_players(&game, &last_add_bomb_time, curr_time);
+		hit_players_in_explosion_range(&game);
 		update_all_states(&game);
 		usleep(FRAME_DURATION);
 	}
