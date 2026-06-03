@@ -20,12 +20,12 @@ long long get_current_time() {
 
 int is_tile_empty(Game *g, int x, int y) {
 	int index = (y * HEIGHT) + x;
-	return g->board[index] == OBJECT_EMPTY;
+	return g->board[index].type == OBJECT_EMPTY;
 }
 
 int is_tile_bonus(Game *g, int x, int y) {
 	int index = (y * HEIGHT) + x;
-	return g->board[index] == OBJECT_BONUS;
+	return g->board[index].type == OBJECT_BONUS;
 }
 
 int is_tile_player(Game *g, int x, int y) {

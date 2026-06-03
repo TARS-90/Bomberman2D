@@ -93,7 +93,7 @@ void copy_players(GameState *game_state, Game *g) {
 
 void copy_game_board(GameState *game_state, Game *g) {
 	for (int i = 0; i < HEIGHT*WIDTH; i++) {
-		game_state->board[i] = g->board[i];
+		game_state->board[i] = g->board[i].type;
 	}
 }
 

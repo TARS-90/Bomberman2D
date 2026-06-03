@@ -2,15 +2,20 @@
 #include "enums.h"
 #include <stdlib.h>
 
-int *create_board() {
-	int *board = malloc((WIDTH * HEIGHT) * sizeof(int));
+Tile *create_board() {
+	Tile *board = malloc((WIDTH * HEIGHT) * sizeof(Tile));
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			int index = (y * HEIGHT) + x;
-			if (y % 2 && x % 2) 
-				board[index] = OBJECT_WALL;
-			else board[index] = OBJECT_EMPTY;
+			if (y % 2 && x % 2){
+				board[index].type = OBJECT_WALL;
+				board[index].obj_addr = NULL;
+			}
+			else {
+				board[index].type = OBJECT_EMPTY;
+				board[index].obj_addr = NULL;
+			}
 		}
 	}
 
