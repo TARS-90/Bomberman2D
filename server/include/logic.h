@@ -22,6 +22,7 @@ int process_blast_tile(Game*, int, int);
 void hit_players_in_explosion_range(Game*);
 void update_all_states(Game*);
 void can_collect_bonus(Game*, Player*);
-int is_game_over(Game*, Player*);
+int is_game_over(Game*);
+Player *find_winner(Game*);
 
 #endif

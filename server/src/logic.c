@@ -341,15 +341,20 @@ void can_collect_bonus(Game* g, Player *p) {
 	}
 }
 
-int is_game_over(Game *g, Player *winner) {
-	if (g->alive_players_count) {
-		for (int i = 0; i < MAX_PLAYERS; i++) {
-			Player *p = g->players[i];
-			if (p != NULL) {
-				winner = p;
-			}
-		}
-		return 1;
-	}
+int is_game_over(Game *g) {
+	if (g->alive_players_count <= 1) return 1;
 	return 0;
+}
+
+Player *find_winner(Game *g) {
+	Player *winner = NULL;
+
+	for (int i = 0; i < MAX_PLAYERS; i++) {
+		Player *p = g->players[i];
+		if (p != NULL) {
+			winner = p;
+		}
+	}
+
+	return winner;
 }

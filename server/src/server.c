@@ -38,7 +38,6 @@ void run_server(const int players_count) {
 	int sock_fd;
 	if (init_socket(&sock_fd, players_count) < 0) return;
 
-	Player winner;
 	Queue *queue = create_queue();
 	Game game = {
 		.players = init_players(queue, players_count, sock_fd),
@@ -52,7 +51,7 @@ void run_server(const int players_count) {
 	send_start_game(&game);
 
 	// Main game loop
-	while (is_game_over(&game, &winner)) {
+	while (!is_game_over(&game)) {
 		game.curr_time = get_current_time();
 
 		send_game_state(&game);
@@ -60,11 +59,15 @@ void run_server(const int players_count) {
 		process_bomb_queue(&game);
 		hit_players_in_explosion_range(&game);
 		update_all_states(&game);
+
 		usleep(FRAME_DURATION);
 	}
 
-	printf("Player %d has win!\n", winner.id);
-	disconnect_player(&game, winner.id);
+	Player *winner = find_winner(&game);
+	if (winner != NULL) {
+		printf("Player %d has win!\n", winner->id);
+		disconnect_player(&game, winner->id);
+	}
 
 	// Release resources
 	close(sock_fd);
