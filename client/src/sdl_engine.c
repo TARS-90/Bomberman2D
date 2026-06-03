@@ -10,6 +10,7 @@ const SDL_Color COLORS[] = {
 	[COLOR_BROWN]    = { .r = 139, .g = 69,  .b = 19,  .a = 255 }, 
 	[COLOR_PURPLE]   = { .r = 128, .g = 0,   .b = 128, .a = 255 }, 
 	[COLOR_DARKBLUE] = { .r = 0,   .g = 0,   .b = 139, .a = 255 }, 
+	[COLOR_ORANGE]   = { .r = 255, .g = 140, .b = 0,   .a = 255 },
 	[COLOR_BLACK]    = { .r = 20,  .g = 20,  .b = 20,  .a = 255 }, 
 	[COLOR_WHITE]	 = { .r = 255, .g = 255, .b = 255, .a = 255 }
 };
@@ -69,6 +70,7 @@ void sdl_engine_render(GameState *game) {
 					case OBJECT_CHEST: color = COLORS[COLOR_BROWN];    break;
 					case OBJECT_BONUS: color = COLORS[COLOR_PURPLE];   break;
 					case OBJECT_BOMB:  color = COLORS[COLOR_DARKBLUE]; break;
+					case OBJECT_BLAST: color = COLORS[COLOR_ORANGE];   break;
 				}
 			}
 
