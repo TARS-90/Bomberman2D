@@ -274,3 +274,16 @@ void update_all_states(Game *g) {
 		}
 	}
 }
+
+int is_game_over(Game *g, Player *winner) {
+	if (g->alive_players_count) {
+		for (int i = 0; i < MAX_PLAYERS; i++) {
+			Player *p = g->players[i];
+			if (p != NULL) {
+				winner = p;
+			}
+		}
+		return 1;
+	}
+	return 0;
+}

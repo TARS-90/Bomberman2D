@@ -1,5 +1,9 @@
 #include "game.h"
 #include "enums.h"
+#include "queue.h"
+#include "player.h"
+#include "bomb.h"
+#include "network.h"
 #include <stdlib.h>
 
 Tile *create_board() {
@@ -22,7 +26,28 @@ Tile *create_board() {
 	return board;
 }
 
-void delete_game(Game *game) {
-	free(game->board);
-	free(game);
+void delete_game(Game *g) {
+	for (int i = 0; i < WIDTH*HEIGHT; i++) {
+		Tile tile = g->board[i];
+		switch (tile.type) {
+			case OBJECT_BOMB: {
+				Bomb *obj = (Bomb*) tile.obj_addr;
+				free(obj);
+				break;
+			}
+			case OBJECT_BLAST: {
+				Blast *obj = (Blast*) tile.obj_addr;
+				free(obj);
+				break;
+			}
+			case OBJECT_BONUS: {
+				// TODO
+			}
+		}
+	}
+
+	// values in nodes are released higher
+	delete_queue_shallow(g->bombs);
+	free(g->board);
+	free(g->players);
 }

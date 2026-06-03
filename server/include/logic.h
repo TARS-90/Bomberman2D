@@ -20,5 +20,6 @@ void do_tasks(Queue*, Game*);
 void process_bomb_queue(Game*);
 void hit_players_in_explosion_range(Game*);
 void update_all_states(Game*);
+int is_game_over(Game*, Player*);
 
 #endif
