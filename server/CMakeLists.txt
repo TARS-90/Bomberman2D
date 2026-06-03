@@ -4,6 +4,7 @@ set(SOURCES
 	src/game.c
 	src/player.c
 	src/bomb.c
+	src/bonus.c
 	src/server.c)
 
 add_executable(server src/main.c)

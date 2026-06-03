@@ -18,8 +18,10 @@ List *process_task_queue(Queue*, Game*);
 void execute_task(Game*, Task*);
 void do_tasks(Queue*, Game*);
 void process_bomb_queue(Game*);
+int process_blast_tile(Game*, int, int);
 void hit_players_in_explosion_range(Game*);
 void update_all_states(Game*);
+void can_collect_bonus(Game*, Player*);
 int is_game_over(Game*, Player*);
 
 #endif

@@ -39,34 +39,7 @@ void explode(Game *g, Bomb *b) {
 	free(b);
 }
 
-int process_blast_tile(Game *g, int x, int y) {
-	if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) return 0;
 
-	int index = (y * HEIGHT) + x;
-	Tile tile = g->board[index];
-
-	switch (tile.type) { 
-		case OBJECT_WALL: return 0; // indestructible
-		case OBJECT_BOMB: return 0; // objects
-		case OBJECT_BLAST: {
-			Blast *blast = (Blast*) tile.obj_addr;
-			blast->placed_time = g->curr_time;
-			return 1;
-		}
-		default: {
-			Blast *blast = malloc(sizeof(Blast));
-			if (!blast) {
-				perror("Malloc for blast failed!\n");
-				return 0;
-			}
-			
-			blast->placed_time = g->curr_time;
-			g->board[index].type = OBJECT_BLAST;
-			g->board[index].obj_addr = blast;
-			return 1;	
-		}
-	}
-}
 
 void make_blast(Game *g, Bomb *b) {
 	// Directions: UP, DOWN, RIGHT, LEFT
@@ -87,5 +60,17 @@ void make_blast(Game *g, Bomb *b) {
 			}
 		}
 	}
+}
+
+void create_blast_at_tile(Game *g, int index) {
+	Blast *blast = malloc(sizeof(Blast));
+		if (!blast) {
+			perror("Malloc for blast failed!\n");
+			return;
+		}
+			
+		blast->placed_time = g->curr_time;
+		g->board[index].type = OBJECT_BLAST;
+		g->board[index].obj_addr = blast;
 }
 

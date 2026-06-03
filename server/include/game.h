@@ -1,6 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 
+#define MAX_CHESTS 100
+
 typedef struct Queue Queue;
 typedef struct Player Player;
 typedef struct Tile {

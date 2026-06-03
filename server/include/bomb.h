@@ -20,6 +20,6 @@ typedef struct Bomb {
 void place_bomb(Game*, Player*);
 void explode(Game*, Bomb*);
 void make_blast(Game*, Bomb*);
-int process_blast_tile(Game*, int, int);
+void create_blast_at_tile(Game*, int);
 
 #endif

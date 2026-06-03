@@ -3,11 +3,13 @@
 #include "queue.h"
 #include "player.h"
 #include "bomb.h"
+#include "bonus.h"
 #include "network.h"
 #include <stdlib.h>
 
 Tile *create_board() {
 	Tile *board = malloc((WIDTH * HEIGHT) * sizeof(Tile));
+	int chests_count = 0;
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -17,8 +19,22 @@ Tile *create_board() {
 				board[index].obj_addr = NULL;
 			}
 			else {
-				board[index].type = OBJECT_EMPTY;
-				board[index].obj_addr = NULL;
+				// 33% chance for creating chest at this tile 
+				int prob = rand() % 3;
+				// avoiding creating chests at respawns
+				int bound = 3;
+				if (prob == 0 && 
+					!(y >= 0 && y <= bound && ((x >= 0 && x <= bound) || (x >= WIDTH - bound && x < WIDTH))) &&		// top respowns
+					!(y >= HEIGHT - bound && y < HEIGHT && ((x >= 0 && x <= bound) || (x >= WIDTH - bound && x < WIDTH)))  // down respowns
+
+				) {
+					board[index].type = OBJECT_CHEST;
+					board[index].obj_addr = NULL;
+				}
+				else {
+					board[index].type = OBJECT_EMPTY;
+					board[index].obj_addr = NULL;
+				}
 			}
 		}
 	}
@@ -41,7 +57,9 @@ void delete_game(Game *g) {
 				break;
 			}
 			case OBJECT_BONUS: {
-				// TODO
+				Bonus *obj = (Bonus*) tile.obj_addr;
+				free(obj);
+				break;
 			}
 		}
 	}
