@@ -7,22 +7,35 @@
 #include <time.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <string.h>
 #include <SDL3/SDL.h>
 
 typedef struct ThreadData {
 	int *sock_fd;
 	GameState *game;
+	pthread_mutex_t *mutex;
+	int *is_connected;
 } ThreadData;
 
 void *receive_game_state(void* args) {
 	ThreadData *data = (ThreadData*) args;
+	GameState buffer;
 
 	while (1) {
-		if (recv(*data->sock_fd, data->game, sizeof(GameState), 0) <= 0) {
-		    printf("Połączenie z serwerem przerwane.\n");
-		    break;
-		}		
+		if (recv(*data->sock_fd, &buffer, sizeof(GameState), 0) <= 0) {
+			printf("Connection to the server has been lost.\n");
+			pthread_mutex_lock(data->mutex);
+			*(data->is_connected) = 0;
+			pthread_mutex_unlock(data->mutex);
+			break;
+		}
+
+		pthread_mutex_lock(data->mutex);
+		memcpy(data->game, &buffer, sizeof(GameState));
+		pthread_mutex_unlock(data->mutex);
 	}
+
+	return NULL;
 }
 
 int connect_to_server(int *sock_fd, struct sockaddr_in *server_addr) {
@@ -56,7 +69,7 @@ void send_action(int sock_fd) {
 		case DIR_LEFT:   msg = MSG_MOVE_LEFT; break;
 		case PLACE_BOMB: msg = MSG_PLACE_BOMB; break;
 	}
-	send(sock_fd, &msg, sizeof(MessageType), 0);	
+	send(sock_fd, &msg, sizeof(MessageType), MSG_NOSIGNAL);	
 }
 
 void run_client() {
@@ -73,31 +86,42 @@ void run_client() {
 	}
 
 	// game has started
-
+	
 	GameState game_state;
-	game_state.is_end = 0;
+	memset(&game_state, 0, sizeof(GameState));
+
+	pthread_mutex_t game_mutex;
+	pthread_mutex_init(&game_mutex, NULL);
+
+	int is_connected = 1;
 
 	ThreadData thread_data = (ThreadData) {
 		.sock_fd = &sock_fd,
-		.game = &game_state
+		.game = &game_state,
+		.mutex = &game_mutex,
+		.is_connected = &is_connected
 	};
+
 	pthread_t pid;
 	if (pthread_create(&pid, NULL, receive_game_state, (void*) &thread_data) != 0) {
 		perror("Creating thread for receiving game state failed!\n");
 		close(sock_fd);
+		pthread_mutex_destroy(&game_mutex);
 		return;
 	}
 
 	if (sdl_engine_init() == -1) {
 		close(sock_fd);
+		pthread_mutex_destroy(&game_mutex);
 		return;
 	}
 
 	SDL_Event e;
 	int running = 1;
+	GameState local_render_state;
 
 	// main loop
-	while (running && !game_state.is_end) {
+	while (running) {
 		// events listening
 		while (SDL_PollEvent(&e)) {
 			if (e.type == SDL_EVENT_QUIT) {
@@ -105,13 +129,26 @@ void run_client() {
 			}
 		}
 
-		sdl_engine_render(&game_state);
+		pthread_mutex_lock(&game_mutex);
+		if (!is_connected) {
+			running = 0;
+		}
+		// coping game state to local variable to avoid locking receiving
+		// game state during rendering
+		memcpy(&local_render_state, &game_state, sizeof(GameState));
+		pthread_mutex_unlock(&game_mutex);
+
+		sdl_engine_render(&local_render_state);
 		send_action(sock_fd);
 		usleep(FRAME_DURATION);
 	}
+
+	if (game_state.is_win == 1) printf("You won!\n");
+	else printf("You lost!\n");
 
 	// releasing resources
 	sdl_engine_shutdown();
 	close(sock_fd);
 	pthread_join(pid, NULL);
+	pthread_mutex_destroy(&game_mutex);
 }

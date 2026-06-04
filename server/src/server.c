@@ -54,7 +54,7 @@ void run_server(const int players_count) {
 	while (!is_game_over(&game)) {
 		game.curr_time = get_current_time();
 
-		send_game_state(&game);
+		send_game_state(&game, 0);
 		do_tasks(queue, &game);
 		process_bomb_queue(&game);
 		hit_players_in_explosion_range(&game);
@@ -66,6 +66,8 @@ void run_server(const int players_count) {
 	Player *winner = find_winner(&game);
 	if (winner != NULL) {
 		printf("Player %d has win!\n", winner->id);
+		send_game_state(&game, 1);
+		sleep(2); // to prevent closing socket before whole send
 		disconnect_player(&game, winner->id);
 	}
 
@@ -78,16 +80,21 @@ void run_server(const int players_count) {
 void copy_players(GameState *game_state, Game *g) {
 	for (int i = 0; i < MAX_PLAYERS; i++) {
 		Player *p = g->players[i];
-		if (p != NULL) {
-			game_state->players[i] = (PlayerState) {
-				.x = p->x,
-				.y = p->y,
-				.color = p->id - 1
-			};
-		} 
-		else {
-			game_state->players[i] = (PlayerState) { -1, -1, -1 }; // it means that there is no player
+		if (!p) {
+			// filling player state structure with 0xFF values
+			// it means that there is no player
+			memset(&game_state->players[i], -1, sizeof(PlayerState));
+			continue;
 		}
+
+		game_state->players[i] = (PlayerState) {
+			.x = p->x,
+			.y = p->y,
+			.health = p->health,
+			.bomb_count = p->bombs_count,
+			.bomb_range = p->bombs_range,
+			.color = p->id - 1
+		};
 	}
 }
 
@@ -97,17 +104,19 @@ void copy_game_board(GameState *game_state, Game *g) {
 	}
 }
 
-void send_game_state(Game *g) { 
+void send_game_state(Game *g, int is_win) { 
 	GameState game_state;
 	copy_players(&game_state, g);
 	copy_game_board(&game_state, g);
-	game_state.is_end = 0;
+	// after the game this will be sent with value 1 (true)
+	// only to winner
+	game_state.is_win = is_win;
 
 	for (int i = 0; i < MAX_PLAYERS; i++) {
 		Player *p = g->players[i];
-		if (p != NULL) {
-			send(p->tdata.sock_fd, &game_state, sizeof(GameState), MSG_NOSIGNAL);
-		}
+		if (!p) continue;
+
+		send(p->tdata.sock_fd, &game_state, sizeof(GameState), MSG_NOSIGNAL);
 	}
 }
 
@@ -115,8 +124,8 @@ void send_start_game(Game *g) {
 	MessageType msg = MSG_START_GAME;
 	for (int i = 0; i < MAX_PLAYERS; i++) {
 		Player *p = g->players[i];
-		if (p != NULL) {
-			send(p->tdata.sock_fd, &msg, sizeof(MessageType), MSG_NOSIGNAL);
-		}
+		if (!p) continue;
+		
+		send(p->tdata.sock_fd, &msg, sizeof(MessageType), MSG_NOSIGNAL);
 	}
 }

@@ -77,7 +77,7 @@ typedef struct PlayerState {
 typedef struct GameState {
 	PlayerState players[MAX_PLAYERS];
 	int board[WIDTH*HEIGHT];
-	int is_end;
+	int is_win;
 } GameState;
 // ---------------------------------
 
