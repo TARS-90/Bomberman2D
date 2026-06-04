@@ -8,7 +8,7 @@ int players_count(int argc, char **argv) {
 	int count = atoi(argv[1]);
 
 	// if there is invalid argument
-	if (count <= 0 || count > 4) return -1;
+	if (count <= 1 || count > 4) return -1;
 
 	return count;
 }

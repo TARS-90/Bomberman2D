@@ -72,6 +72,7 @@ void connect_player(Player *player, Queue *global_queue, const int server_sock_f
 void disconnect_player(Game *g, int player_id) {
 	int index = player_id - 1;
 	Player *p = g->players[index];
+	g->alive_players_count--;
 	g->players[index] = NULL;
 	close(p->tdata.sock_fd);
 	pthread_join(*(p->tdata.thread), NULL);

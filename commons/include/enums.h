@@ -71,6 +71,9 @@ typedef enum {
 typedef struct PlayerState {
 	int x;
 	int y;
+	int health;
+	int bomb_count;
+	int bomb_range;
 	Color color;
 } PlayerState;
 

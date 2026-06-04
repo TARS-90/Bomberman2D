@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <pthread.h>
+#include <string.h>
 
 
 Player **init_players(Queue *global_queue, const int n, const int server_sock_fd) {

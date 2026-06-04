@@ -280,7 +280,6 @@ void hit_players_in_explosion_range(Game *g) {
 	for (int i = 0; i < players_to_kill->size; i++) {
 		Player *p = (Player*) get_at(players_to_kill, i);
 		close(p->tdata.sock_fd);
-		g->alive_players_count--;
 	}
 
 	delete_list_shallow(players_to_kill);
