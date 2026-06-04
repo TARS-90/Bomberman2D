@@ -2,6 +2,9 @@
 #include "enums.h"
 #include <stdio.h>
 
+#define HORIZONTAL_PADDING 280
+#define	VERTICAL_PADDING   130
+
 const SDL_Color COLORS[] = {
 	[COLOR_RED]      = { .r = 220, .g = 20,  .b = 60,  .a = 255 }, 
 	[COLOR_BLUE]     = { .r = 30,  .g = 144, .b = 255, .a = 255 },
@@ -75,8 +78,8 @@ void sdl_engine_render(GameState *game) {
 			}
 
 			SDL_FRect square = {
-				.x = x * SIZE,
-				.y = y * SIZE,
+				.x = x * SIZE + HORIZONTAL_PADDING,
+				.y = y * SIZE + VERTICAL_PADDING,
 				.w = SIZE,
 				.h = SIZE
 			};
