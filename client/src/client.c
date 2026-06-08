@@ -10,12 +10,6 @@
 #include <string.h>
 #include <SDL3/SDL.h>
 
-typedef struct ThreadData {
-	int *sock_fd;
-	GameState *game;
-	pthread_mutex_t *mutex;
-	int *is_connected;
-} ThreadData;
 
 void *receive_game_state(void* args) {
 	ThreadData *data = (ThreadData*) args;
@@ -38,7 +32,7 @@ void *receive_game_state(void* args) {
 	return NULL;
 }
 
-int connect_to_server(int *sock_fd, struct sockaddr_in *server_addr) {
+int connect_to_server(int *sock_fd, struct sockaddr_in *server_addr, const char *server_ip) {
 	if ((*sock_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 		perror("Creating socket failed!\n");
 		return -1;
@@ -47,7 +41,7 @@ int connect_to_server(int *sock_fd, struct sockaddr_in *server_addr) {
 	*server_addr = (struct sockaddr_in) {
 		.sin_family = AF_INET,
 		.sin_port = htons(12345),
-		.sin_addr.s_addr = inet_addr("127.0.0.1")
+		.sin_addr.s_addr = inet_addr(server_ip)
 	};
 
 	if (connect(*sock_fd, (struct sockaddr*)server_addr, sizeof(*server_addr)) < 0) {
@@ -72,10 +66,10 @@ void send_action(int sock_fd) {
 	send(sock_fd, &msg, sizeof(MessageType), MSG_NOSIGNAL);	
 }
 
-void run_client() {
+void run_client(const char *server_ip) {
 	int sock_fd;
 	struct sockaddr_in server_addr;
-	if (connect_to_server(&sock_fd, &server_addr) == -1) return;
+	if (connect_to_server(&sock_fd, &server_addr, server_ip) == -1) return;
 
 	// waiting for protocol from server that starts the game
 	MessageType msg;
